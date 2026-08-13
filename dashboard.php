@@ -39,7 +39,7 @@
       min-height: 100vh;
       background:
         linear-gradient(180deg, rgba(22, 27, 34, 0.88), rgba(22, 27, 34, 0.94) 40%, var(--navy) 75%),
-        radial-gradient(1200px 600px at 15% -10%, rgba(176, 141, 87, 0.10), transparent 60%),
+        radial-gradient(1200px 600px at 15% -10%, rgba(179, 144, 92, 0.22), transparent 70%),
         url('gmicampus.jpg');
       background-size: cover;
       background-position: center top;
