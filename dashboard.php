@@ -62,8 +62,8 @@
     }
 
     .brand-mark {
-      width: 36px;
-      height: 36px;
+      width: 50px;
+      height: 50px;
       border-radius: 8px;
       border: 1px dashed var(--panel-edge);
       display: flex;
@@ -78,8 +78,8 @@
     }
 
     .brand-mark {
-      width: 36px;
-      height: 36px;
+      width: 50px;
+      height: 50px;
       border-radius: 8px;
       border: 1px solid var(--panel-edge);
       background: #F4F5F3;
@@ -92,13 +92,14 @@
       font-weight: 700;
       flex-shrink: 0;
       overflow: hidden;
-      padding: 4px;
+      padding: 0px;
     }
 
     .brand-mark img {
       width: 100%;
       height: 100%;
       object-fit: contain;
+      background-color: #a8ddfb;
     }
 
     .brand-name {
@@ -554,7 +555,7 @@
   <div class="dashboard">
     <div class="brand-row">
       <div class="brand-mark">
-        <img src="assets/logo.png" alt="German-Malaysian Institute"
+        <img src="gmilogoold.png" alt="German-Malaysian Institute"
           onerror="this.onerror=null; this.style.display='none'; this.parentElement.textContent='GMI';">
       </div>
       <span class="brand-name">German-Malaysian Institute</span>
