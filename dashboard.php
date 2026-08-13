@@ -38,8 +38,8 @@
     body {
       min-height: 100vh;
       background:
-        linear-gradient(180deg, #6888a9e0, rgba(21, 35, 52, 0.94) 40%, var(--navy) 200%),
-        radial-gradient(1200px 600px at 15% -10%, rgba(179, 144, 92, 0.22), transparent 150%),
+        linear-gradient(180deg, rgba(22, 27, 34, 0.88), rgba(22, 27, 34, 0.94) 40%, var(--navy) 75%),
+        radial-gradient(1200px 600px at 15% -10%, rgba(176, 141, 87, 0.10), transparent 60%),
         url('gmicampus.jpg');
       background-size: cover;
       background-position: center top;
@@ -47,14 +47,86 @@
       color: var(--paper);
       font-family: 'Inter', sans-serif;
       display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      padding: 56px 20px 80px;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 0 80px;
+    }
+
+    /* ---------- Hadith marquee ---------- */
+    .hadith-bar {
+      width: 100%;
+      background: linear-gradient(90deg, #1B2431, var(--panel) 50%, #1B2431);
+      border-bottom: 1px solid var(--panel-edge);
+      overflow: hidden;
+      padding: 10px 0;
+      position: relative;
+    }
+
+    .hadith-bar::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, var(--navy) 0%, transparent 6%, transparent 94%, var(--navy) 100%);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .hadith-track {
+      display: flex;
+      width: max-content;
+      animation: hadith-scroll 55s linear infinite;
+    }
+
+    .hadith-track:hover {
+      animation-play-state: paused;
+    }
+
+    .hadith-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      white-space: nowrap;
+      padding: 0 48px;
+      font-size: 13px;
+      color: var(--paper);
+    }
+
+    .hadith-item .tag {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 10.5px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--brass);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .hadith-item .ref {
+      color: var(--muted);
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    @keyframes hadith-scroll {
+      from {
+        transform: translateX(0);
+      }
+
+      to {
+        transform: translateX(-50%);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hadith-track {
+        animation: none;
+      }
     }
 
     .dashboard {
       width: 100%;
       max-width: 880px;
+      padding: 56px 20px 0;
     }
 
     /* ---------- Header ---------- */
@@ -66,24 +138,8 @@
     }
 
     .brand-mark {
-      width: 50px;
-      height: 50px;
-      border-radius: 8px;
-      border: 1px dashed var(--panel-edge);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--muted);
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 13px;
-      font-weight: 700;
-      flex-shrink: 0;
-      overflow: hidden;
-    }
-
-    .brand-mark {
-      width: 50px;
-      height: 50px;
+      width: 36px;
+      height: 36px;
       border-radius: 8px;
       border: 1px solid var(--panel-edge);
       background: #F4F5F3;
@@ -96,14 +152,13 @@
       font-weight: 700;
       flex-shrink: 0;
       overflow: hidden;
-      padding: 0px;
+      padding: 4px;
     }
 
     .brand-mark img {
       width: 100%;
       height: 100%;
       object-fit: contain;
-      background-color: #a8ddfb;
     }
 
     .brand-name {
@@ -149,6 +204,114 @@
       margin: 0 0 36px;
       max-width: 520px;
       line-height: 1.55;
+    }
+
+    /* ---------- Clock + Prayer times ---------- */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 12px;
+      margin-top: 0;
+    }
+
+    .clock-card {
+      background: var(--panel);
+      border: 1px solid var(--panel-edge);
+      border-radius: 10px;
+      padding: 22px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .clock-time {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 32px;
+      letter-spacing: -0.01em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .clock-date {
+      color: var(--muted);
+      font-size: 12.5px;
+      margin-top: 6px;
+    }
+
+    .prayer-card {
+      background: var(--panel);
+      border: 1px solid var(--panel-edge);
+      border-radius: 10px;
+      padding: 20px 22px;
+    }
+
+    .prayer-card-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .prayer-zone {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .prayer-row {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+    }
+
+    .prayer-item {
+      text-align: center;
+      padding: 10px 4px;
+      border-radius: 8px;
+      transition: background .6s ease, border-color .6s ease;
+      border: 1px solid transparent;
+    }
+
+    .prayer-item.is-next {
+      border-color: var(--brass);
+      background: var(--brass-soft);
+    }
+
+    .prayer-name {
+      font-size: 10.5px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 6px;
+    }
+
+    .prayer-item.is-next .prayer-name {
+      color: var(--brass);
+    }
+
+    .prayer-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .prayer-note {
+      margin-top: 14px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    @media (max-width:640px) {
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .prayer-row {
+        grid-template-columns: repeat(3, 1fr);
+        row-gap: 14px;
+      }
     }
 
     /* ---------- Hero card ---------- */
@@ -406,114 +569,6 @@
       font-weight: 500;
     }
 
-    /* ---------- Clock + Prayer times ---------- */
-    .info-grid {
-      display: grid;
-      grid-template-columns: 200px 1fr;
-      gap: 12px;
-      margin-top: 44px;
-    }
-
-    .clock-card {
-      background: var(--panel);
-      border: 1px solid var(--panel-edge);
-      border-radius: 10px;
-      padding: 22px 20px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .clock-time {
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 700;
-      font-size: 32px;
-      letter-spacing: -0.01em;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .clock-date {
-      color: var(--muted);
-      font-size: 12.5px;
-      margin-top: 6px;
-    }
-
-    .prayer-card {
-      background: var(--panel);
-      border: 1px solid var(--panel-edge);
-      border-radius: 10px;
-      padding: 20px 22px;
-    }
-
-    .prayer-card-head {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      margin-bottom: 14px;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .prayer-zone {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .prayer-row {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 8px;
-    }
-
-    .prayer-item {
-      text-align: center;
-      padding: 10px 4px;
-      border-radius: 8px;
-      transition: background .6s ease, border-color .6s ease;
-      border: 1px solid transparent;
-    }
-
-    .prayer-item.is-next {
-      border-color: var(--brass);
-      background: var(--brass-soft);
-    }
-
-    .prayer-name {
-      font-size: 10.5px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin: 0 0 6px;
-    }
-
-    .prayer-item.is-next .prayer-name {
-      color: var(--brass);
-    }
-
-    .prayer-value {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 15px;
-      font-weight: 600;
-      margin: 0;
-    }
-
-    .prayer-note {
-      margin-top: 14px;
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    @media (max-width:640px) {
-      .info-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .prayer-row {
-        grid-template-columns: repeat(3, 1fr);
-        row-gap: 14px;
-      }
-    }
-
     /* ---------- Footer note ---------- */
     .footnote {
       margin-top: 32px;
@@ -556,6 +611,21 @@
 
 <body>
 
+  <div class="hadith-bar">
+    <div class="hadith-track" id="hadithTrack">
+      <div class="hadith-item">
+        <span class="tag">Hadith of the Day</span>
+        <span id="hadithText">Loading today's hadith…</span>
+        <span class="ref" id="hadithRef"></span>
+      </div>
+      <div class="hadith-item" aria-hidden="true">
+        <span class="tag">Hadith of the Day</span>
+        <span id="hadithTextDup">Loading today's hadith…</span>
+        <span class="ref" id="hadithRefDup"></span>
+      </div>
+    </div>
+  </div>
+
   <div class="dashboard">
     <div class="brand-row">
       <div class="brand-mark">
@@ -564,12 +634,11 @@
       </div>
       <span class="brand-name">German-Malaysian Institute</span>
     </div>
-    <p class="eyebrow">Internal — Dress Code</p>
+    <p class="eyebrow">GMI Corporate Shirt — Dress Code</p>
     <h1>Wednesday Shirt Colour</h1>
-    <p class="subhead">One glance, no more asking around. Colour rotates automatically by the real calendar — 1st &amp;
-      3rd Wednesday white, 2nd &amp; 4th Wednesday black.</p>
+    <p class="subhead">Colour rotates automatically by the real calendar — 1st &amp; 3rd Wednesday white, 2nd &amp; 4th Wednesday black.</p>
 
-    <div class="info-grid" style="margin-top:0;">
+    <div class="info-grid">
       <div class="clock-card">
         <div class="clock-time" id="clockTime">--:--:--</div>
         <div class="clock-date" id="clockDate">Loading…</div>
@@ -605,10 +674,13 @@
             <p class="prayer-value">--:--</p>
           </div>
         </div>
-        <p class="prayer-note" id="prayerNote">Fetching today's prayer schedule…</p>
+        <p class="prayer-source" id="prayerNote">Fetching today's prayer schedule…</p>
+        <p class="prayer-note">Prayer times from JAKIM e-Solat (zone SGR01)</p>
       </div>
     </div>
+
     <br>
+
     <div class="hero">
       <div class="hero-text">
         <p class="today-label" id="todayLabel">Loading…</p>
@@ -648,8 +720,8 @@
     <div class="strip" id="weekStrip"></div>
 
     <div class="footnote">
-      <span><b>Rule —</b> Week of month is counted by each Wednesday's order within the calendar month.</span>
-      <span><b>Note —</b> a rare 5th Wednesday defaults to white. Prayer times from JAKIM e-Solat (zone SGR01).</span>
+      <span><b>Note —</b> a rare 5th Wednesday defaults to white.</span>
+      <span><b>Copyright —</b> &copy; 2026 Hamba Allah - All rights reserved.</span>
     </div>
   </div>
 
@@ -664,8 +736,6 @@
       const realMonth = realNow.getMonth();
       const todayStr = realNow.toDateString();
 
-      // viewYear/viewMonth track whichever month the strip is currently showing —
-      // independent from "today", so browsing months never touches the hero card.
       let viewYear = realYear;
       let viewMonth = realMonth;
 
@@ -710,7 +780,6 @@
 
         monthLabel.textContent = `${monthNames[month]} ${year} — Wednesdays`;
 
-        // limit how far back/forward browsing goes (12 months either side)
         const monthsFromReal = (year - realYear) * 12 + (month - realMonth);
         prevBtn.disabled = monthsFromReal <= -12;
         nextBtn.disabled = monthsFromReal >= 12;
@@ -759,7 +828,6 @@
         shirtBase.setAttribute('fill', todayEntry.color === 'white' ? 'var(--shirt-white)' : 'var(--shirt-black)');
         shirtShadow.setAttribute('fill', todayEntry.color === 'white' ? 'var(--shirt-white-shadow)' : 'var(--shirt-black-shadow)');
       } else {
-        // not a Wednesday — find the next upcoming Wednesday
         let next = realWednesdays.find(w => w > realNow);
         let nextOrdinal = next ? realWednesdays.indexOf(next) + 1 : null;
         if (!next) {
@@ -806,7 +874,6 @@
           const todayEntry = data.prayers.find(p => String(p.day) === String(Number(todayNum)));
           if (!todayEntry) throw new Error('No entry for today');
 
-          // Imsak isn't in v2 payload — approximate as 10 min before Subuh (fajr)
           const fajrDate = new Date(todayEntry.fajr * 1000);
           const imsakDate = new Date(fajrDate.getTime() - 10 * 60 * 1000);
 
@@ -821,7 +888,6 @@
 
           const fmt = t => t.toLocaleTimeString('en-MY', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Kuala_Lumpur' });
 
-          // find the next upcoming prayer (compare against fajr..isha only, not imsak)
           const now = new Date();
           const comparable = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
           let nextKey = comparable.find(k => times[k] > now);
@@ -838,6 +904,62 @@
         })
         .catch(err => {
           noteEl.textContent = "Couldn't load live prayer times right now — check e-solat.gov.my directly.";
+        });
+    })();
+
+    // ---------- Hadith of the Day (Sahih Bukhari / Sahih Muslim, changes once per day) ----------
+    (function () {
+      const textEl = document.getElementById('hadithText');
+      const refEl = document.getElementById('hadithRef');
+      const textDupEl = document.getElementById('hadithTextDup');
+      const refDupEl = document.getElementById('hadithRefDup');
+
+      function todayKeyMY() {
+        // Malaysia's calendar date, so it flips at Malaysia midnight rather than the visitor's local midnight
+        return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kuala_Lumpur' }); // YYYY-MM-DD
+      }
+
+      function paint(text, ref) {
+        textEl.textContent = text;
+        refEl.textContent = ref;
+        textDupEl.textContent = text;
+        refDupEl.textContent = ref;
+      }
+
+      function cacheAndPaint(text, ref) {
+        paint(text, ref);
+        try {
+          localStorage.setItem('dailyHadith', JSON.stringify({ date: todayKeyMY(), text, ref }));
+        } catch (e) { /* localStorage unavailable — no big deal, just refetches next load */ }
+      }
+
+      // Try today's cached hadith first, so every page load on the same day shows the same one
+      try {
+        const cached = JSON.parse(localStorage.getItem('dailyHadith') || 'null');
+        if (cached && cached.date === todayKeyMY()) {
+          paint(cached.text, cached.ref);
+          return;
+        }
+      } catch (e) { /* ignore bad cache */ }
+
+      // Deterministic per-day pick between the two Sahih collections
+      const dayNum = Math.floor(Date.now() / 86400000);
+      const collection = (dayNum % 2 === 0) ? 'bukhari' : 'muslim';
+
+      fetch(`https://ummahapi.com/api/hadith/random?collection=${collection}`)
+        .then(res => {
+          if (!res.ok) throw new Error('Request failed');
+          return res.json();
+        })
+        .then(data => {
+          const h = data.data;
+          const text = h.hadith_english || h.text_en || 'Hadith text unavailable.';
+          const bookName = collection === 'bukhari' ? 'Sahih al-Bukhari' : 'Sahih Muslim';
+          const ref = `— ${bookName}${h.number ? ', #' + h.number : ''}`;
+          cacheAndPaint(text, ref);
+        })
+        .catch(() => {
+          paint("Couldn't load today's hadith right now.", "— check sunnah.com directly");
         });
     })();
   </script>
