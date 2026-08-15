@@ -106,9 +106,9 @@
     .hadith-track {
       display: flex;
       width: max-content;
-          /* Faster but still readable — shorter duration = faster scroll */
-          animation: hadith-scroll 35s linear infinite;
-        }
+      /* Faster but still readable — shorter duration = faster scroll */
+      animation: hadith-scroll 35s linear infinite;
+    }
 
     .hadith-track:hover {
       animation-play-state: paused;
@@ -647,7 +647,8 @@
 <body>
 
   <div class="hadith-bar">
-    <a id="refreshHadithBtn" class="refresh-hadith" title="Refresh Hadith" aria-label="Refresh Hadith" href="?refreshHadith=1" style="z-index:9999;pointer-events:auto;padding:6px 10px;text-decoration:none;">
+    <a id="refreshHadithBtn" class="refresh-hadith" title="Refresh Hadith" aria-label="Refresh Hadith"
+      href="?refreshHadith=1" style="z-index:9999;pointer-events:auto;padding:6px 10px;text-decoration:none;">
       Refresh
     </a>
     <div class="hadith-track" id="hadithTrack">
@@ -674,7 +675,8 @@
     </div>
     <p class="eyebrow">GMI Corporate Shirt — Dress Code</p>
     <h1>Wednesday Shirt Colour</h1>
-    <p class="subhead">Colour rotates automatically by the real calendar — 1st &amp; 3rd Wednesday white, 2nd &amp; 4th Wednesday black.</p>
+    <p class="subhead">Colour rotates automatically by the real calendar — 1st &amp; 3rd Wednesday white, 2nd &amp; 4th
+      Wednesday black.</p>
 
     <div class="info-grid">
       <div class="clock-card">
@@ -726,7 +728,8 @@
         <p class="date-note" id="dateNote">—</p>
       </div>
       <div class="shirt-stage">
-          <img id="shirtImage" src="gmibajuputih.png" alt="GMI shirt" aria-hidden="true" onerror="this.onerror=null; this.style.opacity=0.6;" />
+        <img id="shirtImage" src="gmibajuputih.png" alt="GMI shirt" aria-hidden="true"
+          onerror="this.onerror=null; this.style.opacity=0.6;" />
       </div>
     </div>
 
@@ -955,7 +958,7 @@
       }
 
       // Try today's cached hadith first, so every page load on the same day shows the same one
-      const _forcedRefreshParam = (function(){ try { return new URLSearchParams(window.location.search).get('refreshHadith') === '1'; } catch(e){ return false; } })();
+      const _forcedRefreshParam = (function () { try { return new URLSearchParams(window.location.search).get('refreshHadith') === '1'; } catch (e) { return false; } })();
       try {
         const cached = JSON.parse(localStorage.getItem('dailyHadith') || 'null');
         // If a manual refresh was requested via URL, clear the cached entry
@@ -1076,7 +1079,7 @@
       } catch (e) { /* ignore */ }
 
       // Wire up manual refresh: provide a global function and attach it to the button
-      window.__refreshHadith = function(){
+      window.__refreshHadith = function () {
         const btn = document.getElementById('refreshHadithBtn');
         try { localStorage.removeItem('dailyHadith'); } catch (e) { /* ignore */ }
         // show a loading hint immediately and disable the button while fetching
