@@ -37,9 +37,10 @@
 
     body {
       min-height: 100vh;
+      /* Lighter overlays so the background photo is clearer */
       background:
-        linear-gradient(180deg, rgba(22, 27, 34, 0.88), rgba(22, 27, 34, 0.94) 40%, var(--navy) 75%),
-        radial-gradient(1200px 600px at 15% -10%, rgba(176, 141, 87, 0.10), transparent 60%),
+        linear-gradient(180deg, rgba(22, 27, 34, 0.58), rgba(22, 27, 34, 0.72) 40%, rgba(22, 27, 34, 0.88) 75%),
+        radial-gradient(1200px 600px at 15% -10%, rgba(176, 141, 87, 0.06), transparent 60%),
         url('gmicampus.jpg');
       background-size: cover;
       background-position: center top;
@@ -71,11 +72,43 @@
       z-index: 2;
     }
 
+    /* Refresh button for Hadith (compact icon) */
+    .refresh-hadith {
+      position: absolute;
+      right: 12px;
+      top: 8px;
+      z-index: 3;
+      background: none;
+      border: 1px solid var(--panel-edge);
+      color: var(--paper);
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .refresh-hadith svg {
+      width: 18px;
+      height: 18px;
+      display: block;
+    }
+
+    .refresh-hadith:hover {
+      border-color: var(--brass);
+      color: var(--brass);
+    }
+
     .hadith-track {
       display: flex;
       width: max-content;
-      animation: hadith-scroll 55s linear infinite;
-    }
+          /* Faster but still readable — shorter duration = faster scroll */
+          animation: hadith-scroll 35s linear infinite;
+        }
 
     .hadith-track:hover {
       animation-play-state: paused;
@@ -381,10 +414,12 @@
       position: relative;
     }
 
-    .shirt-stage svg {
+    .shirt-stage svg,
+    .shirt-stage img {
       width: 150px;
       height: 150px;
       overflow: visible;
+      object-fit: contain;
     }
 
     .shirt-fill-current {
@@ -612,6 +647,9 @@
 <body>
 
   <div class="hadith-bar">
+    <a id="refreshHadithBtn" class="refresh-hadith" title="Refresh Hadith" aria-label="Refresh Hadith" href="?refreshHadith=1" style="z-index:9999;pointer-events:auto;padding:6px 10px;text-decoration:none;">
+      Refresh
+    </a>
     <div class="hadith-track" id="hadithTrack">
       <div class="hadith-item">
         <span class="tag">Hadith of the Day</span>
@@ -688,24 +726,7 @@
         <p class="date-note" id="dateNote">—</p>
       </div>
       <div class="shirt-stage">
-        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <g class="garment">
-            <!-- base shadow shape -->
-            <path class="shirt-fill-shadow"
-              d="M35 12 L25 20 L14 30 L22 40 L28 35 L28 88 L72 88 L72 35 L78 40 L86 30 L75 20 L65 12 L58 18 C55 21 45 21 42 18 Z"
-              fill="var(--shirt-white-shadow)" />
-            <!-- current colour layer -->
-            <path class="shirt-fill-current base"
-              d="M35 10 L25 18 L14 28 L22 38 L28 33 L28 86 L72 86 L72 33 L78 38 L86 28 L75 18 L65 10 L58 16 C55 19 45 19 42 16 Z"
-              fill="var(--shirt-white)" />
-            <!-- alternate colour layer (revealed on hover for tactile feedback) -->
-            <path class="shirt-fill-current alt"
-              d="M35 10 L25 18 L14 28 L22 38 L28 33 L28 86 L72 86 L72 33 L78 38 L86 28 L75 18 L65 10 L58 16 C55 19 45 19 42 16 Z"
-              fill="var(--brass)" opacity="0" />
-            <path class="stitch" d="M42 16 C45 19 55 19 58 16" stroke-width="1" fill="none" />
-            <line class="stitch" x1="50" y1="20" x2="50" y2="86" stroke-width="1" />
-          </g>
-        </svg>
+          <img id="shirtImage" src="gmibajuputih.png" alt="GMI shirt" aria-hidden="true" onerror="this.onerror=null; this.style.opacity=0.6;" />
       </div>
     </div>
 
@@ -721,7 +742,7 @@
 
     <div class="footnote">
       <span><b>Note —</b> a rare 5th Wednesday defaults to white.</span>
-      <span><b>Copyright —</b> &copy; 2026 Hamba Allah - All rights reserved.</span>
+      <span><b>Copyright —</b> &copy; 2026 KRISS - All rights reserved.</span>
     </div>
   </div>
 
@@ -816,8 +837,7 @@
       const todayLabel = document.getElementById('todayLabel');
       const verdictText = document.getElementById('verdictText');
       const dateNote = document.getElementById('dateNote');
-      const shirtBase = document.querySelector('.shirt-fill-current.base');
-      const shirtShadow = document.querySelector('.shirt-fill-shadow');
+      const shirtImg = document.getElementById('shirtImage');
 
       const fullDateStr = `${dayNames[realNow.getDay()]}, ${monthNames[realMonth]} ${realNow.getDate()}, ${realYear}`;
 
@@ -825,8 +845,8 @@
         todayLabel.textContent = "Today";
         verdictText.innerHTML = `Wear <span class="colorword">${todayEntry.color === 'white' ? 'White' : 'Black'}</span>`;
         dateNote.innerHTML = `<strong>${fullDateStr}</strong> — ${['1st', '2nd', '3rd', '4th', '5th'][todayEntry.ordinal - 1]} Wednesday of the month.`;
-        shirtBase.setAttribute('fill', todayEntry.color === 'white' ? 'var(--shirt-white)' : 'var(--shirt-black)');
-        shirtShadow.setAttribute('fill', todayEntry.color === 'white' ? 'var(--shirt-white-shadow)' : 'var(--shirt-black-shadow)');
+        shirtImg.src = todayEntry.color === 'white' ? 'gmibajuputih.png' : 'gmibajuhitam.png';
+        shirtImg.alt = todayEntry.color === 'white' ? 'White corporate shirt' : 'Black corporate shirt';
       } else {
         let next = realWednesdays.find(w => w > realNow);
         let nextOrdinal = next ? realWednesdays.indexOf(next) + 1 : null;
@@ -839,8 +859,8 @@
         todayLabel.textContent = "Not a Wednesday — next up";
         verdictText.innerHTML = `Wear <span class="colorword">${nextColor === 'white' ? 'White' : 'Black'}</span>`;
         dateNote.innerHTML = `Today is <strong>${fullDateStr}</strong>. Next Wednesday is <strong>${monthNames[next.getMonth()]} ${next.getDate()}</strong> — ${['1st', '2nd', '3rd', '4th', '5th'][nextOrdinal - 1]} Wednesday.`;
-        shirtBase.setAttribute('fill', nextColor === 'white' ? 'var(--shirt-white)' : 'var(--shirt-black)');
-        shirtShadow.setAttribute('fill', nextColor === 'white' ? 'var(--shirt-white-shadow)' : 'var(--shirt-black-shadow)');
+        shirtImg.src = nextColor === 'white' ? 'gmibajuputih.png' : 'gmibajuhitam.png';
+        shirtImg.alt = nextColor === 'white' ? 'White corporate shirt' : 'Black corporate shirt';
       }
     })();
 
@@ -913,6 +933,7 @@
       const refEl = document.getElementById('hadithRef');
       const textDupEl = document.getElementById('hadithTextDup');
       const refDupEl = document.getElementById('hadithRefDup');
+      // Hadith status display removed to avoid visual clutter on the marquee
 
       function todayKeyMY() {
         // Malaysia's calendar date, so it flips at Malaysia midnight rather than the visitor's local midnight
@@ -934,33 +955,160 @@
       }
 
       // Try today's cached hadith first, so every page load on the same day shows the same one
+      const _forcedRefreshParam = (function(){ try { return new URLSearchParams(window.location.search).get('refreshHadith') === '1'; } catch(e){ return false; } })();
       try {
         const cached = JSON.parse(localStorage.getItem('dailyHadith') || 'null');
-        if (cached && cached.date === todayKeyMY()) {
-          paint(cached.text, cached.ref);
-          return;
+        // If a manual refresh was requested via URL, clear the cached entry
+        if (_forcedRefreshParam && cached) {
+          try { localStorage.removeItem('dailyHadith'); } catch (e) { /* ignore */ }
         }
-      } catch (e) { /* ignore bad cache */ }
+        // Validate cache: ensure it's for today and doesn't contain placeholder or error text
+        if (!_forcedRefreshParam && cached && cached.date === todayKeyMY()) {
+          const badPlaceholder = /unavailable|couldn't load|hadith text unavailable/i;
+          const refEmptyHash = /#\s*$|,#\s*$/; // trailing # from older responses
+          if (cached.text && !badPlaceholder.test(cached.text) && !(cached.ref && refEmptyHash.test(cached.ref))) {
+            paint(cached.text, cached.ref);
+            return;
+          } else {
+            // Remove clearly-bad cached entry so we don't re-use it
+            try { localStorage.removeItem('dailyHadith'); } catch (e) { /* ignore */ }
+          }
+        } else {
+          // no valid cache or refresh requested
+        }
+      } catch (e) { /* cache check failed */ }
 
       // Deterministic per-day pick between the two Sahih collections
       const dayNum = Math.floor(Date.now() / 86400000);
       const collection = (dayNum % 2 === 0) ? 'bukhari' : 'muslim';
 
-      fetch(`https://ummahapi.com/api/hadith/random?collection=${collection}`)
-        .then(res => {
-          if (!res.ok) throw new Error('Request failed');
-          return res.json();
-        })
-        .then(data => {
-          const h = data.data;
-          const text = h.hadith_english || h.text_en || 'Hadith text unavailable.';
-          const bookName = collection === 'bukhari' ? 'Sahih al-Bukhari' : 'Sahih Muslim';
-          const ref = `— ${bookName}${h.number ? ', #' + h.number : ''}`;
-          cacheAndPaint(text, ref);
-        })
-        .catch(() => {
-          paint("Couldn't load today's hadith right now.", "— check sunnah.com directly");
-        });
+      // Local fallback hadiths (used if the external API is unreachable or returns unexpected data).
+      const FALLBACK = {
+        bukhari: [
+          { text: "Actions are (judged) by motives, so each man will have what he intended.", ref: '— Sahih al-Bukhari' },
+          { text: "The best among you are those who have the best manners and character.", ref: '— Sahih al-Bukhari' }
+        ],
+        muslim: [
+          { text: "None of you truly believes until he loves for his brother what he loves for himself.", ref: '— Sahih Muslim' },
+          { text: "The strong man is not the one who can overpower others; the strong one is the one who controls himself when angry.", ref: '— Sahih Muslim' }
+        ]
+      };
+
+      function pickFallback(randomPick) {
+        const list = FALLBACK[collection] || FALLBACK.bukhari;
+        if (randomPick) {
+          return list[Math.floor(Math.random() * list.length)];
+        }
+        return list[dayNum % list.length];
+      }
+
+      // Fetch function (tries remote API, falls back to local list)
+      // accepts an option to force a random fallback (useful for manual refreshes when API fails)
+      function fetchHadith(options) {
+        options = options || {};
+        // Return the promise so callers can react to completion/failure
+        return fetch(`https://ummahapi.com/api/hadith/random?collection=${collection}`)
+          .then(res => {
+            if (!res.ok) throw new Error('Request failed: ' + res.status);
+            return res.json();
+          })
+          .then(data => {
+            // Defensive checks — different APIs may return different shapes
+            const h = data && (data.data || data.hadith || data[0]) || null;
+            if (h) {
+              const text = h.hadith_english || h.text_en || h.text || h.body || (h[0] && h[0].text) || null;
+              const num = h.number || h.hadith_number || (h[0] && h[0].number) || null;
+              const bookName = collection === 'bukhari' ? 'Sahih al-Bukhari' : 'Sahih Muslim';
+              const ref = `${num ? '— ' + bookName + ', #' + num : '— ' + bookName}`;
+
+              if (text) {
+                cacheAndPaint(text, ref);
+                return { ok: true };
+              }
+            }
+
+            // If we reach here, API response didn't contain usable text — use fallback
+            const fb = pickFallback(options.forceRandomFallback);
+            cacheAndPaint(fb.text, fb.ref);
+            return { ok: false, fallback: true };
+          })
+          .catch(err => {
+            console.error('Hadith fetch error:', err);
+            const fb = pickFallback(options.forceRandomFallback);
+            cacheAndPaint(fb.text, fb.ref);
+            return { ok: false, error: String(err) };
+          });
+      }
+
+      // Initial fetch if cache wasn't used earlier
+      fetchHadith();
+
+      // If page loaded with ?refreshHadith=1 then clear cache and force a refresh, then remove param
+      try {
+        const _params = new URLSearchParams(window.location.search);
+        if (_params.get('refreshHadith') === '1') {
+          // remember previous cached text (if any) so we can detect no-op refreshes
+          const prevCached = JSON.parse(localStorage.getItem('dailyHadith') || 'null');
+          const prevText = prevCached && prevCached.text ? String(prevCached.text) : null;
+
+          try { localStorage.removeItem('dailyHadith'); } catch (e) { /* ignore */ }
+
+          fetchHadith({ forceRandomFallback: true }).then(() => {
+            // If the fetch resulted in the same text as before, pick a different random fallback to ensure a visible change
+            try {
+              const newCached = JSON.parse(localStorage.getItem('dailyHadith') || 'null');
+              const newText = newCached && newCached.text ? String(newCached.text) : null;
+              if (prevText && newText && prevText === newText) {
+                let fb = pickFallback(true);
+                // try to pick a different one when possible
+                const list = FALLBACK[collection] || FALLBACK.bukhari;
+                if (fb.text === prevText && list.length > 1) fb = list.find(f => f.text !== prevText) || fb;
+                cacheAndPaint(fb.text, fb.ref);
+              }
+            } catch (e) { /* ignore */ }
+
+            // remove query param without reloading
+            _params.delete('refreshHadith');
+            const newUrl = window.location.pathname + (_params.toString() ? ('?' + _params.toString()) : '');
+            history.replaceState(null, '', newUrl);
+          });
+        }
+      } catch (e) { /* ignore */ }
+
+      // Wire up manual refresh: provide a global function and attach it to the button
+      window.__refreshHadith = function(){
+        const btn = document.getElementById('refreshHadithBtn');
+        try { localStorage.removeItem('dailyHadith'); } catch (e) { /* ignore */ }
+        // show a loading hint immediately and disable the button while fetching
+        paint("Loading today's hadith…", '');
+        if (btn) {
+          btn.disabled = true;
+          const originalText = btn.textContent;
+          btn.textContent = 'Refreshing…';
+
+          return fetchHadith({ forceRandomFallback: true }).then(result => {
+            console.log('Hadith refresh result:', result);
+            return result;
+          }).catch(err => {
+            console.error('Unexpected error during hadith refresh:', err);
+            paint("Couldn't refresh hadith.", '');
+            return { ok: false, error: String(err) };
+          }).finally(() => {
+            btn.disabled = false;
+            btn.textContent = originalText;
+          });
+        } else {
+          // no button in DOM — still perform fetch
+          return fetchHadith({ forceRandomFallback: true });
+        }
+      };
+
+      const refreshBtn = document.getElementById('refreshHadithBtn');
+      if (refreshBtn) {
+        refreshBtn.addEventListener('click', () => { window.__refreshHadith(); });
+      } else {
+        console.warn('Refresh Hadith button not found in DOM');
+      }
     })();
   </script>
 
