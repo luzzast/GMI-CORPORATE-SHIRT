@@ -799,53 +799,53 @@
 
     <div class="footnote">
       <span><b>Note —</b> a rare 5th Wednesday defaults to white.</span>
+      <span id="visitCounter"><b>Visits —</b> loading…</span>
       <span><b>Copyright —</b> &copy; 2026 KRISS - All rights reserved.</span>
     </div>
-  </div>
 
-  <script>
-    (function () {
-      const COLOR_BY_ORDINAL = { 1: 'white', 2: 'black', 3: 'white', 4: 'black', 5: 'white' };
-      const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-      const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    <script>
+      (function () {
+        const COLOR_BY_ORDINAL = { 1: 'white', 2: 'black', 3: 'white', 4: 'black', 5: 'white' };
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-      const realNow = new Date();
-      const realYear = realNow.getFullYear();
-      const realMonth = realNow.getMonth();
-      const todayStr = realNow.toDateString();
+        const realNow = new Date();
+        const realYear = realNow.getFullYear();
+        const realMonth = realNow.getMonth();
+        const todayStr = realNow.toDateString();
 
-      let viewYear = realYear;
-      let viewMonth = realMonth;
+        let viewYear = realYear;
+        let viewMonth = realMonth;
 
-      const strip = document.getElementById('weekStrip');
-      const monthLabel = document.getElementById('monthLabel');
-      const prevBtn = document.getElementById('prevMonthBtn');
-      const nextBtn = document.getElementById('nextMonthBtn');
-      const resetBtn = document.getElementById('resetMonthBtn');
+        const strip = document.getElementById('weekStrip');
+        const monthLabel = document.getElementById('monthLabel');
+        const prevBtn = document.getElementById('prevMonthBtn');
+        const nextBtn = document.getElementById('nextMonthBtn');
+        const resetBtn = document.getElementById('resetMonthBtn');
 
-      function getWednesdays(year, month) {
-        const list = [];
-        const d = new Date(year, month, 1);
-        while (d.getMonth() === month) {
-          if (d.getDay() === 3) list.push(new Date(d));
-          d.setDate(d.getDate() + 1);
+        function getWednesdays(year, month) {
+          const list = [];
+          const d = new Date(year, month, 1);
+          while (d.getMonth() === month) {
+            if (d.getDay() === 3) list.push(new Date(d));
+            d.setDate(d.getDate() + 1);
+          }
+          return list;
         }
-        return list;
-      }
 
-      function renderStrip(year, month) {
-        const wednesdays = getWednesdays(year, month);
-        strip.innerHTML = '';
-        wednesdays.forEach((wed, idx) => {
-          const ordinal = idx + 1;
-          const color = COLOR_BY_ORDINAL[ordinal] || 'white';
-          const isToday = wed.toDateString() === todayStr;
+        function renderStrip(year, month) {
+          const wednesdays = getWednesdays(year, month);
+          strip.innerHTML = '';
+          wednesdays.forEach((wed, idx) => {
+            const ordinal = idx + 1;
+            const color = COLOR_BY_ORDINAL[ordinal] || 'white';
+            const isToday = wed.toDateString() === todayStr;
 
-          const card = document.createElement('div');
-          card.className = 'week-card' + (isToday ? ' is-today' : '');
+            const card = document.createElement('div');
+            card.className = 'week-card' + (isToday ? ' is-today' : '');
 
-          const ordLabel = ['1st', '2nd', '3rd', '4th', '5th'][idx] + ' Wednesday';
-          card.innerHTML = `
+            const ordLabel = ['1st', '2nd', '3rd', '4th', '5th'][idx] + ' Wednesday';
+            card.innerHTML = `
         <p class="week-ordinal">${ordLabel}</p>
         <p class="week-date">${monthNames[month].slice(0, 3)} ${wed.getDate()}</p>
         <div class="swatch-row">
@@ -853,321 +853,355 @@
           <span class="swatch-text">${color === 'white' ? 'White shirt' : 'Black shirt'}</span>
         </div>
       `;
-          strip.appendChild(card);
-        });
-
-        monthLabel.textContent = `${monthNames[month]} ${year} — Wednesdays`;
-
-        const monthsFromReal = (year - realYear) * 12 + (month - realMonth);
-        prevBtn.disabled = monthsFromReal <= -12;
-        nextBtn.disabled = monthsFromReal >= 12;
-        resetBtn.style.display = (year === realYear && month === realMonth) ? 'none' : 'inline-flex';
-      }
-
-      prevBtn.addEventListener('click', () => {
-        viewMonth--;
-        if (viewMonth < 0) { viewMonth = 11; viewYear--; }
-        renderStrip(viewYear, viewMonth);
-      });
-      nextBtn.addEventListener('click', () => {
-        viewMonth++;
-        if (viewMonth > 11) { viewMonth = 0; viewYear++; }
-        renderStrip(viewYear, viewMonth);
-      });
-      resetBtn.addEventListener('click', () => {
-        viewYear = realYear; viewMonth = realMonth;
-        renderStrip(viewYear, viewMonth);
-      });
-
-      renderStrip(viewYear, viewMonth);
-
-      // ---------- Hero (always reflects the real current day, never the browsed month) ----------
-      const realWednesdays = getWednesdays(realYear, realMonth);
-      let todayEntry = null;
-      realWednesdays.forEach((wed, idx) => {
-        if (wed.toDateString() === todayStr) {
-          const ordinal = idx + 1;
-          todayEntry = { wed, ordinal, color: COLOR_BY_ORDINAL[ordinal] || 'white' };
-        }
-      });
-
-      const todayLabel = document.getElementById('todayLabel');
-      const verdictText = document.getElementById('verdictText');
-      const dateNote = document.getElementById('dateNote');
-      const shirtImg = document.getElementById('shirtImage');
-
-      const fullDateStr = `${dayNames[realNow.getDay()]}, ${monthNames[realMonth]} ${realNow.getDate()}, ${realYear}`;
-
-      if (todayEntry) {
-        todayLabel.textContent = "Today";
-        verdictText.innerHTML = `Wear <span class="colorword">${todayEntry.color === 'white' ? 'White' : 'Black'}</span>`;
-        dateNote.innerHTML = `<strong>${fullDateStr}</strong> — ${['1st', '2nd', '3rd', '4th', '5th'][todayEntry.ordinal - 1]} Wednesday of the month.`;
-        shirtImg.src = todayEntry.color === 'white' ? 'gmibajuputih.png' : 'gmibajuhitam.png';
-        shirtImg.alt = todayEntry.color === 'white' ? 'White corporate shirt' : 'Black corporate shirt';
-      } else {
-        let next = realWednesdays.find(w => w > realNow);
-        let nextOrdinal = next ? realWednesdays.indexOf(next) + 1 : null;
-        if (!next) {
-          const nd = new Date(realYear, realMonth + 1, 1);
-          while (nd.getDay() !== 3) { nd.setDate(nd.getDate() + 1); }
-          next = nd; nextOrdinal = 1;
-        }
-        const nextColor = COLOR_BY_ORDINAL[nextOrdinal] || 'white';
-        todayLabel.textContent = "Not a Wednesday — next up";
-        verdictText.innerHTML = `Wear <span class="colorword">${nextColor === 'white' ? 'White' : 'Black'}</span>`;
-        dateNote.innerHTML = `Today is <strong>${fullDateStr}</strong>. Next Wednesday is <strong>${monthNames[next.getMonth()]} ${next.getDate()}</strong> — ${['1st', '2nd', '3rd', '4th', '5th'][nextOrdinal - 1]} Wednesday.`;
-        shirtImg.src = nextColor === 'white' ? 'gmibajuputih.png' : 'gmibajuhitam.png';
-        shirtImg.alt = nextColor === 'white' ? 'White corporate shirt' : 'Black corporate shirt';
-      }
-    })();
-
-    // ---------- Live clock (Malaysia time) ----------
-    (function () {
-      const timeEl = document.getElementById('clockTime');
-      const dateEl = document.getElementById('clockDate');
-      function tick() {
-        const now = new Date();
-        timeEl.textContent = now.toLocaleTimeString('en-MY', { hour12: false, timeZone: 'Asia/Kuala_Lumpur' });
-        dateEl.textContent = now.toLocaleDateString('en-MY', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Kuala_Lumpur' });
-      }
-      tick();
-      setInterval(tick, 1000);
-    })();
-
-    // ---------- Prayer times (JAKIM e-Solat via waktusolat.app) ----------
-    (function () {
-      const ZONE = 'SGR01'; // change this to your area's zone code — see https://api.waktusolat.app/zones
-      const noteEl = document.getElementById('prayerNote');
-      const items = document.querySelectorAll('#prayerRow .prayer-item');
-      const order = ['imsak', 'fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
-
-      fetch(`https://api.waktusolat.app/v2/solat/${ZONE}`)
-        .then(res => {
-          if (!res.ok) throw new Error('Request failed');
-          return res.json();
-        })
-        .then(data => {
-          const todayNum = new Date().toLocaleString('en-US', { day: 'numeric', timeZone: 'Asia/Kuala_Lumpur' });
-          const todayEntry = data.prayers.find(p => String(p.day) === String(Number(todayNum)));
-          if (!todayEntry) throw new Error('No entry for today');
-
-          const fajrDate = new Date(todayEntry.fajr * 1000);
-          const imsakDate = new Date(fajrDate.getTime() - 10 * 60 * 1000);
-
-          const times = {
-            imsak: imsakDate,
-            fajr: fajrDate,
-            dhuhr: new Date(todayEntry.dhuhr * 1000),
-            asr: new Date(todayEntry.asr * 1000),
-            maghrib: new Date(todayEntry.maghrib * 1000),
-            isha: new Date(todayEntry.isha * 1000)
-          };
-
-          const fmt = t => t.toLocaleTimeString('en-MY', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Kuala_Lumpur' });
-
-          const now = new Date();
-          const comparable = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
-          let nextKey = comparable.find(k => times[k] > now);
-
-          order.forEach((key, idx) => {
-            const el = items[idx];
-            el.querySelector('.prayer-value').textContent = fmt(times[key]);
-            el.classList.toggle('is-next', key === nextKey);
+            strip.appendChild(card);
           });
 
-          noteEl.textContent = nextKey
-            ? `Next: ${nextKey.charAt(0).toUpperCase() + nextKey.slice(1)} at ${fmt(times[nextKey])}`
-            : `That's Isyak done for today — next up is Imsak tomorrow.`;
-        })
-        .catch(err => {
-          noteEl.textContent = "Couldn't load live prayer times right now — check e-solat.gov.my directly.";
+          monthLabel.textContent = `${monthNames[month]} ${year} — Wednesdays`;
+
+          const monthsFromReal = (year - realYear) * 12 + (month - realMonth);
+          prevBtn.disabled = monthsFromReal <= -12;
+          nextBtn.disabled = monthsFromReal >= 12;
+          resetBtn.style.display = (year === realYear && month === realMonth) ? 'none' : 'inline-flex';
+        }
+
+        prevBtn.addEventListener('click', () => {
+          viewMonth--;
+          if (viewMonth < 0) { viewMonth = 11; viewYear--; }
+          renderStrip(viewYear, viewMonth);
         });
-    })();
+        nextBtn.addEventListener('click', () => {
+          viewMonth++;
+          if (viewMonth > 11) { viewMonth = 0; viewYear++; }
+          renderStrip(viewYear, viewMonth);
+        });
+        resetBtn.addEventListener('click', () => {
+          viewYear = realYear; viewMonth = realMonth;
+          renderStrip(viewYear, viewMonth);
+        });
 
-    // ---------- Hadith of the Day (Sahih Bukhari / Sahih Muslim, changes once per day) ----------
-    (function () {
-      const textEl = document.getElementById('hadithText');
-      const refEl = document.getElementById('hadithRef');
-      const textDupEl = document.getElementById('hadithTextDup');
-      const refDupEl = document.getElementById('hadithRefDup');
-      // Hadith status display removed to avoid visual clutter on the marquee
+        renderStrip(viewYear, viewMonth);
 
-      function todayKeyMY() {
-        // Malaysia's calendar date, so it flips at Malaysia midnight rather than the visitor's local midnight
-        return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kuala_Lumpur' }); // YYYY-MM-DD
-      }
-
-      function paint(text, ref) {
-        textEl.textContent = text;
-        refEl.textContent = ref;
-        textDupEl.textContent = text;
-        refDupEl.textContent = ref;
-      }
-
-      function cacheAndPaint(text, ref) {
-        paint(text, ref);
-        try {
-          localStorage.setItem('dailyHadith', JSON.stringify({ date: todayKeyMY(), text, ref }));
-        } catch (e) { /* localStorage unavailable — no big deal, just refetches next load */ }
-      }
-
-      // Try today's cached hadith first, so every page load on the same day shows the same one
-      const _forcedRefreshParam = (function () { try { return new URLSearchParams(window.location.search).get('refreshHadith') === '1'; } catch (e) { return false; } })();
-      try {
-        const cached = JSON.parse(localStorage.getItem('dailyHadith') || 'null');
-        // If a manual refresh was requested via URL, clear the cached entry
-        if (_forcedRefreshParam && cached) {
-          try { localStorage.removeItem('dailyHadith'); } catch (e) { /* ignore */ }
-        }
-        // Validate cache: ensure it's for today and doesn't contain placeholder or error text
-        if (!_forcedRefreshParam && cached && cached.date === todayKeyMY()) {
-          const badPlaceholder = /unavailable|couldn't load|hadith text unavailable/i;
-          const refEmptyHash = /#\s*$|,#\s*$/; // trailing # from older responses
-          if (cached.text && !badPlaceholder.test(cached.text) && !(cached.ref && refEmptyHash.test(cached.ref))) {
-            paint(cached.text, cached.ref);
-            return;
-          } else {
-            // Remove clearly-bad cached entry so we don't re-use it
-            try { localStorage.removeItem('dailyHadith'); } catch (e) { /* ignore */ }
+        // ---------- Hero (always reflects the real current day, never the browsed month) ----------
+        const realWednesdays = getWednesdays(realYear, realMonth);
+        let todayEntry = null;
+        realWednesdays.forEach((wed, idx) => {
+          if (wed.toDateString() === todayStr) {
+            const ordinal = idx + 1;
+            todayEntry = { wed, ordinal, color: COLOR_BY_ORDINAL[ordinal] || 'white' };
           }
+        });
+
+        const todayLabel = document.getElementById('todayLabel');
+        const verdictText = document.getElementById('verdictText');
+        const dateNote = document.getElementById('dateNote');
+        const shirtImg = document.getElementById('shirtImage');
+
+        const fullDateStr = `${dayNames[realNow.getDay()]}, ${monthNames[realMonth]} ${realNow.getDate()}, ${realYear}`;
+
+        if (todayEntry) {
+          todayLabel.textContent = "Today";
+          verdictText.innerHTML = `Wear <span class="colorword">${todayEntry.color === 'white' ? 'White' : 'Black'}</span>`;
+          dateNote.innerHTML = `<strong>${fullDateStr}</strong> — ${['1st', '2nd', '3rd', '4th', '5th'][todayEntry.ordinal - 1]} Wednesday of the month.`;
+          shirtImg.src = todayEntry.color === 'white' ? 'gmibajuputih.png' : 'gmibajuhitam.png';
+          shirtImg.alt = todayEntry.color === 'white' ? 'White corporate shirt' : 'Black corporate shirt';
         } else {
-          // no valid cache or refresh requested
+          let next = realWednesdays.find(w => w > realNow);
+          let nextOrdinal = next ? realWednesdays.indexOf(next) + 1 : null;
+          if (!next) {
+            const nd = new Date(realYear, realMonth + 1, 1);
+            while (nd.getDay() !== 3) { nd.setDate(nd.getDate() + 1); }
+            next = nd; nextOrdinal = 1;
+          }
+          const nextColor = COLOR_BY_ORDINAL[nextOrdinal] || 'white';
+          todayLabel.textContent = "Not a Wednesday — next up";
+          verdictText.innerHTML = `Wear <span class="colorword">${nextColor === 'white' ? 'White' : 'Black'}</span>`;
+          dateNote.innerHTML = `Today is <strong>${fullDateStr}</strong>. Next Wednesday is <strong>${monthNames[next.getMonth()]} ${next.getDate()}</strong> — ${['1st', '2nd', '3rd', '4th', '5th'][nextOrdinal - 1]} Wednesday.`;
+          shirtImg.src = nextColor === 'white' ? 'gmibajuputih.png' : 'gmibajuhitam.png';
+          shirtImg.alt = nextColor === 'white' ? 'White corporate shirt' : 'Black corporate shirt';
         }
-      } catch (e) { /* cache check failed */ }
+      })();
 
-      // Deterministic per-day pick between the two Sahih collections
-      const dayNum = Math.floor(Date.now() / 86400000);
-      const collection = (dayNum % 2 === 0) ? 'bukhari' : 'muslim';
-
-      // Local fallback hadiths (used if the external API is unreachable or returns unexpected data).
-      const FALLBACK = {
-        bukhari: [
-          { text: "Actions are (judged) by motives, so each man will have what he intended.", ref: '— Sahih al-Bukhari' },
-          { text: "The best among you are those who have the best manners and character.", ref: '— Sahih al-Bukhari' }
-        ],
-        muslim: [
-          { text: "None of you truly believes until he loves for his brother what he loves for himself.", ref: '— Sahih Muslim' },
-          { text: "The strong man is not the one who can overpower others; the strong one is the one who controls himself when angry.", ref: '— Sahih Muslim' }
-        ]
-      };
-
-      function pickFallback(randomPick) {
-        const list = FALLBACK[collection] || FALLBACK.bukhari;
-        if (randomPick) {
-          return list[Math.floor(Math.random() * list.length)];
+      // ---------- Live clock (Malaysia time) ----------
+      (function () {
+        const timeEl = document.getElementById('clockTime');
+        const dateEl = document.getElementById('clockDate');
+        function tick() {
+          const now = new Date();
+          timeEl.textContent = now.toLocaleTimeString('en-MY', { hour12: false, timeZone: 'Asia/Kuala_Lumpur' });
+          dateEl.textContent = now.toLocaleDateString('en-MY', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Kuala_Lumpur' });
         }
-        return list[dayNum % list.length];
-      }
+        tick();
+        setInterval(tick, 1000);
+      })();
 
-      // Fetch function (tries remote API, falls back to local list)
-      // accepts an option to force a random fallback (useful for manual refreshes when API fails)
-      function fetchHadith(options) {
-        options = options || {};
-        // Return the promise so callers can react to completion/failure
-        return fetch(`https://ummahapi.com/api/hadith/random?collection=${collection}`)
+      // ---------- Prayer times (JAKIM e-Solat via waktusolat.app) ----------
+      (function () {
+        const ZONE = 'SGR01'; // change this to your area's zone code — see https://api.waktusolat.app/zones
+        const noteEl = document.getElementById('prayerNote');
+        const items = document.querySelectorAll('#prayerRow .prayer-item');
+        const order = ['imsak', 'fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+
+        fetch(`https://api.waktusolat.app/v2/solat/${ZONE}`)
           .then(res => {
-            if (!res.ok) throw new Error('Request failed: ' + res.status);
+            if (!res.ok) throw new Error('Request failed');
             return res.json();
           })
           .then(data => {
-            // Defensive checks — different APIs may return different shapes
-            const h = data && (data.data || data.hadith || data[0]) || null;
-            if (h) {
-              const text = h.hadith_english || h.text_en || h.text || h.body || (h[0] && h[0].text) || null;
-              const num = h.number || h.hadith_number || (h[0] && h[0].number) || null;
-              const bookName = collection === 'bukhari' ? 'Sahih al-Bukhari' : 'Sahih Muslim';
-              const ref = `${num ? '— ' + bookName + ', #' + num : '— ' + bookName}`;
+            const todayNum = new Date().toLocaleString('en-US', { day: 'numeric', timeZone: 'Asia/Kuala_Lumpur' });
+            const todayEntry = data.prayers.find(p => String(p.day) === String(Number(todayNum)));
+            if (!todayEntry) throw new Error('No entry for today');
 
-              if (text) {
-                cacheAndPaint(text, ref);
-                return { ok: true };
-              }
-            }
+            const fajrDate = new Date(todayEntry.fajr * 1000);
+            const imsakDate = new Date(fajrDate.getTime() - 10 * 60 * 1000);
 
-            // If we reach here, API response didn't contain usable text — use fallback
-            const fb = pickFallback(options.forceRandomFallback);
-            cacheAndPaint(fb.text, fb.ref);
-            return { ok: false, fallback: true };
+            const times = {
+              imsak: imsakDate,
+              fajr: fajrDate,
+              dhuhr: new Date(todayEntry.dhuhr * 1000),
+              asr: new Date(todayEntry.asr * 1000),
+              maghrib: new Date(todayEntry.maghrib * 1000),
+              isha: new Date(todayEntry.isha * 1000)
+            };
+
+            const fmt = t => t.toLocaleTimeString('en-MY', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Kuala_Lumpur' });
+
+            const now = new Date();
+            const comparable = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+            let nextKey = comparable.find(k => times[k] > now);
+
+            order.forEach((key, idx) => {
+              const el = items[idx];
+              el.querySelector('.prayer-value').textContent = fmt(times[key]);
+              el.classList.toggle('is-next', key === nextKey);
+            });
+
+            noteEl.textContent = nextKey
+              ? `Next: ${nextKey.charAt(0).toUpperCase() + nextKey.slice(1)} at ${fmt(times[nextKey])}`
+              : `That's Isyak done for today — next up is Imsak tomorrow.`;
           })
           .catch(err => {
-            console.error('Hadith fetch error:', err);
-            const fb = pickFallback(options.forceRandomFallback);
-            cacheAndPaint(fb.text, fb.ref);
-            return { ok: false, error: String(err) };
+            noteEl.textContent = "Couldn't load live prayer times right now — check e-solat.gov.my directly.";
           });
-      }
+      })();
 
-      // Initial fetch if cache wasn't used earlier
-      fetchHadith();
+      // ---------- Hadith of the Day (Sahih Bukhari / Sahih Muslim, changes once per day) ----------
+      (function () {
+        const textEl = document.getElementById('hadithText');
+        const refEl = document.getElementById('hadithRef');
+        const textDupEl = document.getElementById('hadithTextDup');
+        const refDupEl = document.getElementById('hadithRefDup');
+        // Hadith status display removed to avoid visual clutter on the marquee
 
-      // If page loaded with ?refreshHadith=1 then clear cache and force a refresh, then remove param
-      try {
-        const _params = new URLSearchParams(window.location.search);
-        if (_params.get('refreshHadith') === '1') {
-          // remember previous cached text (if any) so we can detect no-op refreshes
-          const prevCached = JSON.parse(localStorage.getItem('dailyHadith') || 'null');
-          const prevText = prevCached && prevCached.text ? String(prevCached.text) : null;
+        function todayKeyMY() {
+          // Malaysia's calendar date, so it flips at Malaysia midnight rather than the visitor's local midnight
+          return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kuala_Lumpur' }); // YYYY-MM-DD
+        }
 
-          try { localStorage.removeItem('dailyHadith'); } catch (e) { /* ignore */ }
+        function paint(text, ref) {
+          textEl.textContent = text;
+          refEl.textContent = ref;
+          textDupEl.textContent = text;
+          refDupEl.textContent = ref;
+        }
 
-          fetchHadith({ forceRandomFallback: true }).then(() => {
-            // If the fetch resulted in the same text as before, pick a different random fallback to ensure a visible change
-            try {
-              const newCached = JSON.parse(localStorage.getItem('dailyHadith') || 'null');
-              const newText = newCached && newCached.text ? String(newCached.text) : null;
-              if (prevText && newText && prevText === newText) {
-                let fb = pickFallback(true);
-                // try to pick a different one when possible
-                const list = FALLBACK[collection] || FALLBACK.bukhari;
-                if (fb.text === prevText && list.length > 1) fb = list.find(f => f.text !== prevText) || fb;
-                cacheAndPaint(fb.text, fb.ref);
+        function cacheAndPaint(text, ref) {
+          paint(text, ref);
+          try {
+            localStorage.setItem('dailyHadith', JSON.stringify({ date: todayKeyMY(), text, ref }));
+          } catch (e) { /* localStorage unavailable — no big deal, just refetches next load */ }
+        }
+
+        // Try today's cached hadith first, so every page load on the same day shows the same one
+        const _forcedRefreshParam = (function () { try { return new URLSearchParams(window.location.search).get('refreshHadith') === '1'; } catch (e) { return false; } })();
+        try {
+          const cached = JSON.parse(localStorage.getItem('dailyHadith') || 'null');
+          // If a manual refresh was requested via URL, clear the cached entry
+          if (_forcedRefreshParam && cached) {
+            try { localStorage.removeItem('dailyHadith'); } catch (e) { /* ignore */ }
+          }
+          // Validate cache: ensure it's for today and doesn't contain placeholder or error text
+          if (!_forcedRefreshParam && cached && cached.date === todayKeyMY()) {
+            const badPlaceholder = /unavailable|couldn't load|hadith text unavailable/i;
+            const refEmptyHash = /#\s*$|,#\s*$/; // trailing # from older responses
+            if (cached.text && !badPlaceholder.test(cached.text) && !(cached.ref && refEmptyHash.test(cached.ref))) {
+              paint(cached.text, cached.ref);
+              return;
+            } else {
+              // Remove clearly-bad cached entry so we don't re-use it
+              try { localStorage.removeItem('dailyHadith'); } catch (e) { /* ignore */ }
+            }
+          } else {
+            // no valid cache or refresh requested
+          }
+        } catch (e) { /* cache check failed */ }
+
+        // Deterministic per-day pick between the two Sahih collections
+        const dayNum = Math.floor(Date.now() / 86400000);
+        const collection = (dayNum % 2 === 0) ? 'bukhari' : 'muslim';
+
+        // Local fallback hadiths (used if the external API is unreachable or returns unexpected data).
+        const FALLBACK = {
+          bukhari: [
+            { text: "Actions are (judged) by motives, so each man will have what he intended.", ref: '— Sahih al-Bukhari' },
+            { text: "The best among you are those who have the best manners and character.", ref: '— Sahih al-Bukhari' }
+          ],
+          muslim: [
+            { text: "None of you truly believes until he loves for his brother what he loves for himself.", ref: '— Sahih Muslim' },
+            { text: "The strong man is not the one who can overpower others; the strong one is the one who controls himself when angry.", ref: '— Sahih Muslim' }
+          ]
+        };
+
+        function pickFallback(randomPick) {
+          const list = FALLBACK[collection] || FALLBACK.bukhari;
+          if (randomPick) {
+            return list[Math.floor(Math.random() * list.length)];
+          }
+          return list[dayNum % list.length];
+        }
+
+        // Fetch function (tries remote API, falls back to local list)
+        // accepts an option to force a random fallback (useful for manual refreshes when API fails)
+        function fetchHadith(options) {
+          options = options || {};
+          // Return the promise so callers can react to completion/failure
+          return fetch(`https://ummahapi.com/api/hadith/random?collection=${collection}`)
+            .then(res => {
+              if (!res.ok) throw new Error('Request failed: ' + res.status);
+              return res.json();
+            })
+            .then(data => {
+              // Defensive checks — different APIs may return different shapes
+              const h = data && (data.data || data.hadith || data[0]) || null;
+              if (h) {
+                const text = h.hadith_english || h.text_en || h.text || h.body || (h[0] && h[0].text) || null;
+                const num = h.number || h.hadith_number || (h[0] && h[0].number) || null;
+                const bookName = collection === 'bukhari' ? 'Sahih al-Bukhari' : 'Sahih Muslim';
+                const ref = `${num ? '— ' + bookName + ', #' + num : '— ' + bookName}`;
+
+                if (text) {
+                  cacheAndPaint(text, ref);
+                  return { ok: true };
+                }
               }
-            } catch (e) { /* ignore */ }
 
-            // remove query param without reloading
-            _params.delete('refreshHadith');
-            const newUrl = window.location.pathname + (_params.toString() ? ('?' + _params.toString()) : '');
-            history.replaceState(null, '', newUrl);
-          });
+              // If we reach here, API response didn't contain usable text — use fallback
+              const fb = pickFallback(options.forceRandomFallback);
+              cacheAndPaint(fb.text, fb.ref);
+              return { ok: false, fallback: true };
+            })
+            .catch(err => {
+              console.error('Hadith fetch error:', err);
+              const fb = pickFallback(options.forceRandomFallback);
+              cacheAndPaint(fb.text, fb.ref);
+              return { ok: false, error: String(err) };
+            });
         }
-      } catch (e) { /* ignore */ }
 
-      // Wire up manual refresh: provide a global function and attach it to the button
-      window.__refreshHadith = function () {
-        const btn = document.getElementById('refreshHadithBtn');
-        try { localStorage.removeItem('dailyHadith'); } catch (e) { /* ignore */ }
-        // show a loading hint immediately and disable the button while fetching
-        paint("Loading today's hadith…", '');
-        if (btn) {
-          btn.disabled = true;
-          const originalText = btn.textContent;
-          btn.textContent = 'Refreshing…';
+        // Initial fetch if cache wasn't used earlier
+        fetchHadith();
 
-          return fetchHadith({ forceRandomFallback: true }).then(result => {
-            console.log('Hadith refresh result:', result);
-            return result;
-          }).catch(err => {
-            console.error('Unexpected error during hadith refresh:', err);
-            paint("Couldn't refresh hadith.", '');
-            return { ok: false, error: String(err) };
-          }).finally(() => {
-            btn.disabled = false;
-            btn.textContent = originalText;
-          });
+        // If page loaded with ?refreshHadith=1 then clear cache and force a refresh, then remove param
+        try {
+          const _params = new URLSearchParams(window.location.search);
+          if (_params.get('refreshHadith') === '1') {
+            // remember previous cached text (if any) so we can detect no-op refreshes
+            const prevCached = JSON.parse(localStorage.getItem('dailyHadith') || 'null');
+            const prevText = prevCached && prevCached.text ? String(prevCached.text) : null;
+
+            try { localStorage.removeItem('dailyHadith'); } catch (e) { /* ignore */ }
+
+            fetchHadith({ forceRandomFallback: true }).then(() => {
+              // If the fetch resulted in the same text as before, pick a different random fallback to ensure a visible change
+              try {
+                const newCached = JSON.parse(localStorage.getItem('dailyHadith') || 'null');
+                const newText = newCached && newCached.text ? String(newCached.text) : null;
+                if (prevText && newText && prevText === newText) {
+                  let fb = pickFallback(true);
+                  // try to pick a different one when possible
+                  const list = FALLBACK[collection] || FALLBACK.bukhari;
+                  if (fb.text === prevText && list.length > 1) fb = list.find(f => f.text !== prevText) || fb;
+                  cacheAndPaint(fb.text, fb.ref);
+                }
+              } catch (e) { /* ignore */ }
+
+              // remove query param without reloading
+              _params.delete('refreshHadith');
+              const newUrl = window.location.pathname + (_params.toString() ? ('?' + _params.toString()) : '');
+              history.replaceState(null, '', newUrl);
+            });
+          }
+        } catch (e) { /* ignore */ }
+
+        // Wire up manual refresh: provide a global function and attach it to the button
+        window.__refreshHadith = function () {
+          const btn = document.getElementById('refreshHadithBtn');
+          try { localStorage.removeItem('dailyHadith'); } catch (e) { /* ignore */ }
+          // show a loading hint immediately and disable the button while fetching
+          paint("Loading today's hadith…", '');
+          if (btn) {
+            btn.disabled = true;
+            const originalText = btn.textContent;
+            btn.textContent = 'Refreshing…';
+
+            return fetchHadith({ forceRandomFallback: true }).then(result => {
+              console.log('Hadith refresh result:', result);
+              return result;
+            }).catch(err => {
+              console.error('Unexpected error during hadith refresh:', err);
+              paint("Couldn't refresh hadith.", '');
+              return { ok: false, error: String(err) };
+            }).finally(() => {
+              btn.disabled = false;
+              btn.textContent = originalText;
+            });
+          } else {
+            // no button in DOM — still perform fetch
+            return fetchHadith({ forceRandomFallback: true });
+          }
+        };
+
+        const refreshBtn = document.getElementById('refreshHadithBtn');
+        if (refreshBtn) {
+          refreshBtn.addEventListener('click', () => { window.__refreshHadith(); });
         } else {
-          // no button in DOM — still perform fetch
-          return fetchHadith({ forceRandomFallback: true });
+          console.warn('Refresh Hadith button not found in DOM');
         }
-      };
+      })();
+      // ---------- Visit counter (counts once per browser per day) ----------
+      (function () {
+        const COUNTER_KEY = 'gmi-corporate-shirt-dashboard'; // change this if you ever want to reset to zero
+        const el = document.getElementById('visitCounter');
 
-      const refreshBtn = document.getElementById('refreshHadithBtn');
-      if (refreshBtn) {
-        refreshBtn.addEventListener('click', () => { window.__refreshHadith(); });
-      } else {
-        console.warn('Refresh Hadith button not found in DOM');
-      }
-    })();
-  </script>
+        function todayKeyMY() {
+          return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kuala_Lumpur' });
+        }
+
+        function showCount(n) {
+          el.innerHTML = `<b>Visits —</b> ${n.toLocaleString()}`;
+        }
+
+        let alreadyCountedToday = false;
+        try {
+          alreadyCountedToday = localStorage.getItem('visitCountedDate') === todayKeyMY();
+        } catch (e) { /* ignore */ }
+
+        const endpoint = alreadyCountedToday
+          ? `https://countapi.mileshilliard.com/api/v1/get/${COUNTER_KEY}`
+          : `https://countapi.mileshilliard.com/api/v1/hit/${COUNTER_KEY}`;
+
+        fetch(endpoint)
+          .then(res => res.json())
+          .then(data => {
+            showCount(data.value);
+            if (!alreadyCountedToday) {
+              try { localStorage.setItem('visitCountedDate', todayKeyMY()); } catch (e) { /* ignore */ }
+            }
+          })
+          .catch(() => {
+            el.style.display = 'none'; // fail silently, don't clutter the footer with an error
+          });
+      })();
+    </script>
 
 </body>
 
