@@ -592,13 +592,29 @@
       transform: translateY(-2px);
     }
 
-    .week-card.is-today {
+    .week-card.is-today,
+    .week-card.is-this-week {
       border-color: var(--brass);
       background: linear-gradient(180deg, #232C3A, var(--panel));
     }
 
     .week-card.is-today::before {
       content: "TODAY";
+      position: absolute;
+      top: -9px;
+      left: 14px;
+      background: var(--brass);
+      color: #1a1408;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+
+    .week-card.is-this-week::before {
+      content: "THIS WEEK";
       position: absolute;
       top: -9px;
       left: 14px;
@@ -841,8 +857,17 @@
             const color = COLOR_BY_ORDINAL[ordinal] || 'white';
             const isToday = wed.toDateString() === todayStr;
 
+            // "This week" = same Sunday-Saturday week as today, even if today isn't the Wednesday itself
+            function startOfWeek(d) {
+              const s = new Date(d);
+              s.setDate(d.getDate() - d.getDay());
+              s.setHours(0, 0, 0, 0);
+              return s;
+            }
+            const isThisWeek = !isToday && startOfWeek(wed).getTime() === startOfWeek(realNow).getTime();
+
             const card = document.createElement('div');
-            card.className = 'week-card' + (isToday ? ' is-today' : '');
+            card.className = 'week-card' + (isToday ? ' is-today' : isThisWeek ? ' is-this-week' : '');
 
             const ordLabel = ['1st', '2nd', '3rd', '4th', '5th'][idx] + ' Wednesday';
             card.innerHTML = `
@@ -1265,12 +1290,12 @@
       })();
 
       function paint(text, ref) {
-          textEl.textContent = text;
-          refEl.textContent = ref;
-          textDupEl.textContent = text;
-          refDupEl.textContent = ref;
-          if (window.__updateMarqueeSpeed) window.__updateMarqueeSpeed();   // add this line
-        }
+        textEl.textContent = text;
+        refEl.textContent = ref;
+        textDupEl.textContent = text;
+        refDupEl.textContent = ref;
+        if (window.__updateMarqueeSpeed) window.__updateMarqueeSpeed();   // add this line
+      }
       // ---------- Visit counter (counts once per browser per day) ----------
       (function () {
         const COUNTER_KEY = 'gmi-corporate-shirt-dashboard'; // change this if you ever want to reset to zero
