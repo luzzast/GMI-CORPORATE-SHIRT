@@ -172,8 +172,6 @@
         
         .toast {
             position: fixed;
-            top: 52px;
-            right: 12px;
             background: var(--panel);
             border: 1px solid var(--brass);
             color: var(--paper);
@@ -189,7 +187,9 @@
             pointer-events: none;
             z-index: 10000;
             transition: opacity .4s ease, transform .4s ease;
-            white-space: nowrap;
+            white-space: normal;
+            max-width: 200px;
+            text-align: center;
         }
         
         .toast.show {
@@ -387,50 +387,6 @@
             }
         }
         /* ---------- Mobile: hadith bar layout + readability ---------- */
-        
-        @media (max-width: 480px) {
-            .hadith-bar {
-                padding: 10px 0 44px;
-                /* extra bottom space for the button row */
-            }
-            .hadith-item {
-                font-size: 11px;
-                padding: 0 28px;
-                gap: 6px;
-            }
-            .hadith-item .tag {
-                font-size: 9px;
-            }
-            .hadith-item .ref {
-                font-size: 10px;
-            }
-            .hadith-track {
-                animation-duration: 26s;
-                /* faster loop so it doesn't feel sluggish on a narrow screen */
-            }
-            .refresh-hadith {
-                position: absolute;
-                top: auto;
-                bottom: 8px;
-                right: 50%;
-                transform: translateX(50%);
-                font-size: 10px;
-                padding: 5px 12px 5px 8px;
-            }
-            .toast {
-                top: auto;
-                bottom: 44px;
-                right: 50%;
-                transform: translateX(50%) translateY(6px);
-                font-size: 10.5px;
-                white-space: normal;
-                max-width: 260px;
-                text-align: center;
-            }
-            .toast.show {
-                transform: translateX(50%) translateY(0);
-            }
-        }
         /* ---------- Hero card ---------- */
         
         .hero {
@@ -1069,6 +1025,7 @@
                 refEl.textContent = ref;
                 textDupEl.textContent = text;
                 refDupEl.textContent = ref;
+                if (window.__updateMarqueeSpeed) window.__updateMarqueeSpeed();
             }
 
             function cacheAndPaint(text, ref) {
@@ -1575,12 +1532,13 @@
 
             function showToast(message, autoHide) {
                 toast.textContent = message;
+                if (window.__positionToast) window.__positionToast();
                 toast.classList.add('show');
                 clearTimeout(toastTimer);
                 if (autoHide) {
                     toastTimer = setTimeout(() => {
                         toast.classList.remove('show');
-                    }, 5000);
+                    }, 3000);
                 }
             }
 
@@ -1602,6 +1560,41 @@
                     hideToast();
                 }
             });
+
+
+        })();
+
+        // ---------- Adaptive marquee speed + toast position (works at any screen size) ----------
+        (function() {
+            const track = document.getElementById('hadithTrack');
+            const toast = document.getElementById('toast');
+            const btn = document.getElementById('refreshHadithBtn');
+            const SPEED_PX_PER_SEC = 45; // constant reading speed, regardless of screen width or text length
+
+            function updateMarqueeSpeed() {
+                const singleSetWidth = track.scrollWidth / 2;
+                const duration = singleSetWidth / SPEED_PX_PER_SEC;
+                track.style.animationDuration = duration + 's';
+            }
+
+            function positionToast() {
+                const btnRect = btn.getBoundingClientRect();
+                const toastRect = toast.getBoundingClientRect();
+                let left = btnRect.right - toastRect.width;
+                if (left < 8) left = 8; // never let it run off the left edge on narrow screens
+                toast.style.top = (btnRect.bottom + 8) + 'px';
+                toast.style.left = left + 'px';
+            }
+
+            window.__updateMarqueeSpeed = updateMarqueeSpeed;
+            window.__positionToast = positionToast;
+
+            window.addEventListener('resize', () => {
+                updateMarqueeSpeed();
+                if (toast.classList.contains('show')) positionToast();
+            });
+
+            updateMarqueeSpeed();
         })();
     </script>
 </body>
