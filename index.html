@@ -1193,6 +1193,84 @@
         }
       })();
 
+      // ---------- Adaptive marquee speed + toast position (works at any screen size) ----------
+      (function () {
+        const track = document.getElementById('hadithTrack');
+        const toast = document.getElementById('toast');
+        const btn = document.getElementById('refreshHadithBtn');
+        const SPEED_PX_PER_SEC = 45;
+
+        function updateMarqueeSpeed() {
+          const singleSetWidth = track.scrollWidth / 2;
+          const duration = singleSetWidth / SPEED_PX_PER_SEC;
+          track.style.animationDuration = duration + 's';
+        }
+
+        function positionToast() {
+          const btnRect = btn.getBoundingClientRect();
+          const toastRect = toast.getBoundingClientRect();
+          let left = btnRect.right - toastRect.width;
+          if (left < 8) left = 8;
+          toast.style.top = (btnRect.bottom + 8) + 'px';
+          toast.style.left = left + 'px';
+        }
+
+        window.__updateMarqueeSpeed = updateMarqueeSpeed;
+        window.__positionToast = positionToast;
+
+        window.addEventListener('resize', () => {
+          updateMarqueeSpeed();
+          if (toast.classList.contains('show')) positionToast();
+        });
+
+        updateMarqueeSpeed();
+      })();
+
+      // ---------- Click-to-pause hadith marquee (toggle, no auto-resume) ----------
+      (function () {
+        const bar = document.querySelector('.hadith-bar');
+        const track = document.getElementById('hadithTrack');
+        const toast = document.getElementById('toast');
+        let toastTimer = null;
+
+        function showToast(message, autoHide) {
+          toast.textContent = message;
+          if (window.__positionToast) window.__positionToast();
+          toast.classList.add('show');
+          clearTimeout(toastTimer);
+          if (autoHide) {
+            toastTimer = setTimeout(() => {
+              toast.classList.remove('show');
+            }, 5000);
+          }
+        }
+
+        function hideToast() {
+          clearTimeout(toastTimer);
+          toast.classList.remove('show');
+        }
+
+        showToast('Tap the hadith to pause it', true);
+
+        bar.addEventListener('click', function (e) {
+          if (e.target.closest('#refreshHadithBtn')) return;
+
+          const isPaused = track.classList.toggle('js-paused');
+          if (isPaused) {
+            showToast('Paused — tap to resume', false);
+          } else {
+            hideToast();
+          }
+        });
+      })();
+
+      function paint(text, ref) {
+          textEl.textContent = text;
+          refEl.textContent = ref;
+          textDupEl.textContent = text;
+          refDupEl.textContent = ref;
+          if (window.__updateMarqueeSpeed) window.__updateMarqueeSpeed();   // add this line
+        }
       // ---------- Visit counter (counts once per browser per day) ----------
       (function () {
         const COUNTER_KEY = 'gmi-corporate-shirt-dashboard'; // change this if you ever want to reset to zero
