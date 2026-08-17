@@ -355,7 +355,7 @@
     }
 
     .prayer-item.is-next {
-      border-color: var(--brass);
+      border-color: rgb(255, 153, 0);
       background: var(--brass-soft);
     }
 
@@ -368,7 +368,7 @@
     }
 
     .prayer-item.is-next .prayer-name {
-      color: var(--brass);
+      color: rgb(255, 153, 0);
     }
 
     .prayer-value {
@@ -593,9 +593,15 @@
       transform: translateY(-2px);
     }
 
+    .week-card.is-today:hover,
+    .week-card.is-this-week:hover {
+      border-color: rgb(255, 187, 0);
+      box-shadow: 0 0 0 1px rgb(255, 187, 0), 0 4px 16px rgba(255, 187, 0, 0.35);
+    }
+
     .week-card.is-today,
     .week-card.is-this-week {
-      border-color: var(--brass);
+      border-color: rgb(255, 153, 0);
       background: linear-gradient(180deg, #232C3A, var(--panel));
     }
 
@@ -604,7 +610,7 @@
       position: absolute;
       top: -9px;
       left: 14px;
-      background: var(--brass);
+      background: rgb(255, 153, 0);
       color: #1a1408;
       font-family: 'Space Grotesk', sans-serif;
       font-size: 9.5px;
@@ -619,7 +625,7 @@
       position: absolute;
       top: -9px;
       left: 14px;
-      background: var(--brass);
+      background: rgb(255, 153, 0);
       color: #1a1408;
       font-family: 'Space Grotesk', sans-serif;
       font-size: 9.5px;
