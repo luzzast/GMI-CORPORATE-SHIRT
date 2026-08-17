@@ -2,796 +2,840 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wednesday Attire — Dashboard</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap"
-    rel="stylesheet">
-  <style>
-    :root {
-      --navy: #161B22;
-      --panel: #1F2733;
-      --panel-edge: #2A3441;
-      --paper: #F4F5F3;
-      --brass: #B08D57;
-      --brass-soft: rgba(176, 141, 87, 0.16);
-      --shirt-white: #F7F7F5;
-      --shirt-white-shadow: #D8D9D4;
-      --shirt-black: #16171A;
-      --shirt-black-shadow: #000000;
-      --muted: #8B93A1;
-      --radius: 14px;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      min-height: 100vh;
-      /* Lighter overlays so the background photo is clearer */
-      background:
-        linear-gradient(180deg, rgba(22, 27, 34, 0.58), rgba(22, 27, 34, 0.72) 40%, rgba(22, 27, 34, 0.88) 75%),
-        radial-gradient(1200px 600px at 15% -10%, rgba(176, 141, 87, 0.06), transparent 60%),
-        url('gmicampus.jpg');
-      background-size: cover;
-      background-position: center top;
-      background-attachment: fixed;
-      color: var(--paper);
-      font-family: 'Inter', sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 0 0 80px;
-    }
-
-    /* ---------- Hadith marquee ---------- */
-    .hadith-bar {
-      width: 100%;
-      background: linear-gradient(90deg, #1B2431, var(--panel) 50%, #1B2431);
-      border-bottom: 1px solid var(--panel-edge);
-      overflow: hidden;
-      padding: 10px 0;
-      position: relative;
-    }
-
-    .hadith-bar::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(90deg, var(--navy) 0%, transparent 6%, transparent 94%, var(--navy) 100%);
-      pointer-events: none;
-      z-index: 2;
-    }
-
-    /* Refresh button for Hadith (compact icon) */
-    .refresh-hadith {
-      position: absolute;
-      right: 12px;
-      top: 8px;
-      z-index: 3;
-      background: none;
-      border: 1px solid var(--panel-edge);
-      color: var(--paper);
-      width: 36px;
-      height: 36px;
-      padding: 0;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 14px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .refresh-hadith svg {
-      width: 18px;
-      height: 18px;
-      display: block;
-    }
-
-    .refresh-hadith:hover {
-      border-color: var(--brass);
-      color: var(--brass);
-    }
-
-    .hadith-track {
-      display: flex;
-      width: max-content;
-      /* Faster but still readable — shorter duration = faster scroll */
-      animation: hadith-scroll 35s linear infinite;
-    }
-
-    .hadith-track:hover {
-      animation-play-state: paused;
-    }
-
-    .hadith-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      white-space: nowrap;
-      padding: 0 48px;
-      font-size: 13px;
-      color: var(--paper);
-    }
-
-    .hadith-item .tag {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 10.5px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--brass);
-      font-weight: 700;
-      flex-shrink: 0;
-    }
-
-    .hadith-item .ref {
-      color: var(--muted);
-      font-size: 12px;
-      flex-shrink: 0;
-    }
-
-    @keyframes hadith-scroll {
-      from {
-        transform: translateX(0);
-      }
-
-      to {
-        transform: translateX(-50%);
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .hadith-track {
-        animation: none;
-      }
-    }
-
-    .dashboard {
-      width: 100%;
-      max-width: 880px;
-      padding: 56px 20px 0;
-    }
-
-    /* ---------- Header ---------- */
-    .brand-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 28px;
-    }
-
-    .brand-mark {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
-      border: 1px solid var(--panel-edge);
-      background: #F4F5F3;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--muted);
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 13px;
-      font-weight: 700;
-      flex-shrink: 0;
-      overflow: hidden;
-      padding: 4px;
-    }
-
-    .brand-mark img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
-
-    .brand-name {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--muted);
-      letter-spacing: 0.02em;
-    }
-
-    .eyebrow {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 12px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--brass);
-      margin: 0 0 10px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .eyebrow::before {
-      content: "";
-      width: 22px;
-      height: 1px;
-      background: var(--brass);
-      display: inline-block;
-    }
-
-    h1 {
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 600;
-      font-size: clamp(26px, 4vw, 36px);
-      line-height: 1.15;
-      margin: 0 0 6px;
-      letter-spacing: -0.01em;
-    }
-
-    .subhead {
-      color: var(--muted);
-      font-size: 14.5px;
-      margin: 0 0 36px;
-      max-width: 520px;
-      line-height: 1.55;
-    }
-
-    /* ---------- Clock + Prayer times ---------- */
-    .info-grid {
-      display: grid;
-      grid-template-columns: 200px 1fr;
-      gap: 12px;
-      margin-top: 0;
-    }
-
-    .clock-card {
-      background: var(--panel);
-      border: 1px solid var(--panel-edge);
-      border-radius: 10px;
-      padding: 22px 20px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .clock-time {
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 700;
-      font-size: 32px;
-      letter-spacing: -0.01em;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .clock-date {
-      color: var(--muted);
-      font-size: 12.5px;
-      margin-top: 6px;
-    }
-
-    .prayer-card {
-      background: var(--panel);
-      border: 1px solid var(--panel-edge);
-      border-radius: 10px;
-      padding: 20px 22px;
-    }
-
-    .prayer-card-head {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      margin-bottom: 14px;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .prayer-zone {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .prayer-row {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 8px;
-    }
-
-    .prayer-item {
-      text-align: center;
-      padding: 10px 4px;
-      border-radius: 8px;
-      transition: background .6s ease, border-color .6s ease;
-      border: 1px solid transparent;
-    }
-
-    .prayer-item.is-next {
-      border-color: var(--brass);
-      background: var(--brass-soft);
-    }
-
-    .prayer-name {
-      font-size: 10.5px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin: 0 0 6px;
-    }
-
-    .prayer-item.is-next .prayer-name {
-      color: var(--brass);
-    }
-
-    .prayer-value {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 15px;
-      font-weight: 600;
-      margin: 0;
-    }
-
-    .prayer-note {
-      margin-top: 14px;
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    @media (max-width:640px) {
-      .info-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .prayer-row {
-        grid-template-columns: repeat(3, 1fr);
-        row-gap: 14px;
-      }
-    }
-
-    /* ---------- Hero card ---------- */
-    .hero {
-      background: linear-gradient(180deg, var(--panel), var(--panel) 60%, #1B2431);
-      border: 1px solid var(--panel-edge);
-      border-radius: var(--radius);
-      padding: 36px 40px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 32px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(120deg, transparent 40%, var(--brass-soft) 50%, transparent 60%);
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .hero-text .today-label {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 12px;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin: 0 0 12px;
-    }
-
-    .hero-text .verdict {
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 700;
-      font-size: clamp(34px, 5vw, 48px);
-      line-height: 1;
-      margin: 0 0 14px;
-      letter-spacing: -0.01em;
-    }
-
-    .verdict .colorword {
-      position: relative;
-    }
-
-    .hero-text .date-note {
-      color: var(--muted);
-      font-size: 14px;
-      margin: 0;
-    }
-
-    .hero-text .date-note strong {
-      color: var(--paper);
-      font-weight: 500;
-    }
-
-    /* ---------- Shirt SVG + slow corporate hover ---------- */
-    .shirt-stage {
-      width: 190px;
-      height: 190px;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    }
-
-    .shirt-stage svg,
-    .shirt-stage img {
-      width: 150px;
-      height: 150px;
-      overflow: visible;
-      object-fit: contain;
-    }
-
-    .shirt-fill-current {
-      transition: fill 1.4s cubic-bezier(.22, .61, .36, 1), opacity 1.4s cubic-bezier(.22, .61, .36, 1);
-    }
-
-    .shirt-fill-shadow {
-      transition: fill 1.4s cubic-bezier(.22, .61, .36, 1);
-    }
-
-    .shirt-stage:hover .garment {
-      transform: translateY(-3px);
-    }
-
-    .garment {
-      transition: transform 1.2s cubic-bezier(.22, .61, .36, 1);
-    }
-
-    .shirt-stage:hover .shirt-fill-current.alt {
-      opacity: 1;
-    }
-
-    .shirt-fill-current.alt {
-      opacity: 0;
-      transition: opacity 1.6s cubic-bezier(.22, .61, .36, 1);
-    }
-
-    .stitch {
-      stroke-dasharray: 3 4;
-      stroke: var(--brass);
-      opacity: 0.55;
-    }
-
-    /* ---------- Week strip ---------- */
-    .strip-label {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 12px;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin: 44px 0 16px;
-    }
-
-    .strip-label-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin: 44px 0 16px;
-    }
-
-    .strip-label-row .strip-label {
-      margin: 0;
-    }
-
-    .month-nav {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .month-nav button {
-      background: var(--panel);
-      border: 1px solid var(--panel-edge);
-      color: var(--paper);
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: border-color .5s ease, color .5s ease;
-    }
-
-    .month-nav button:hover {
-      border-color: var(--brass);
-      color: var(--brass);
-    }
-
-    .month-nav button:disabled {
-      opacity: 0.35;
-      cursor: default;
-    }
-
-    .month-nav button:disabled:hover {
-      border-color: var(--panel-edge);
-      color: var(--paper);
-    }
-
-    .month-nav .reset-link {
-      font-size: 11.5px;
-      color: var(--brass);
-      cursor: pointer;
-      background: none;
-      border: none;
-      width: auto;
-      padding: 0 2px;
-    }
-
-    .strip {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 12px;
-    }
-
-    .week-card {
-      background: var(--panel);
-      border: 1px solid var(--panel-edge);
-      border-radius: 10px;
-      padding: 18px 18px 20px;
-      position: relative;
-      transition: border-color .6s ease, transform .6s ease;
-    }
-
-    .week-card:hover {
-      border-color: var(--brass);
-      transform: translateY(-2px);
-    }
-
-    .week-card.is-today {
-      border-color: var(--brass);
-      background: linear-gradient(180deg, #232C3A, var(--panel));
-    }
-
-    .week-card.is-today::before {
-      content: "TODAY";
-      position: absolute;
-      top: -9px;
-      left: 14px;
-      background: var(--brass);
-      color: #1a1408;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 9.5px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      padding: 2px 8px;
-      border-radius: 20px;
-    }
-
-    .week-ordinal {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 11px;
-      letter-spacing: 0.1em;
-      color: var(--muted);
-      text-transform: uppercase;
-      margin: 0 0 8px;
-    }
-
-    .week-date {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 19px;
-      font-weight: 600;
-      margin: 0 0 14px;
-    }
-
-    .swatch-row {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-    }
-
-    .swatch {
-      width: 15px;
-      height: 15px;
-      border-radius: 4px;
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      flex-shrink: 0;
-    }
-
-    .swatch.white {
-      background: var(--shirt-white);
-    }
-
-    .swatch.black {
-      background: var(--shirt-black);
-      border-color: rgba(255, 255, 255, 0.1);
-    }
-
-    .swatch-text {
-      font-size: 13.5px;
-      font-weight: 500;
-    }
-
-    /* ---------- Footer note ---------- */
-    .footnote {
-      margin-top: 32px;
-      padding-top: 20px;
-      border-top: 1px solid var(--panel-edge);
-      color: var(--muted);
-      font-size: 12.5px;
-      line-height: 1.6;
-      display: flex;
-      justify-content: space-between;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-
-    .footnote b {
-      color: var(--muted);
-      font-weight: 600;
-    }
-
-    @media (max-width:560px) {
-      .hero {
-        flex-direction: column-reverse;
-        text-align: center;
-        padding: 28px 24px;
-      }
-
-      .hero-text .date-note,
-      .hero-text .today-label {
-        text-align: center;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      * {
-        transition: none !important;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wednesday Attire — Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+         :root {
+            --navy: #161B22;
+            --panel: #1F2733;
+            --panel-edge: #2A3441;
+            --paper: #F4F5F3;
+            --brass: #B08D57;
+            --brass-soft: rgba(176, 141, 87, 0.16);
+            --shirt-white: #F7F7F5;
+            --shirt-white-shadow: #D8D9D4;
+            --shirt-black: #16171A;
+            --shirt-black-shadow: #000000;
+            --muted: #8B93A1;
+            --radius: 14px;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            min-height: 100vh;
+            /* Lighter overlays so the background photo is clearer */
+            background: linear-gradient(180deg, rgba(22, 27, 34, 0.58), rgba(22, 27, 34, 0.72) 40%, rgba(22, 27, 34, 0.88) 75%), radial-gradient(1200px 600px at 15% -10%, rgba(176, 141, 87, 0.06), transparent 60%), url('gmicampus.jpg');
+            background-size: cover;
+            background-position: center top;
+            background-attachment: fixed;
+            color: var(--paper);
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 0 80px;
+        }
+        /* ---------- Hadith marquee ---------- */
+        
+        .hadith-bar {
+            width: 100%;
+            background: linear-gradient(90deg, #1B2431, var(--panel) 50%, #1B2431);
+            border-bottom: 1px solid var(--panel-edge);
+            overflow: hidden;
+            padding: 10px 0;
+            position: relative;
+        }
+        
+        .hadith-bar::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, var(--navy) 0%, transparent 6%, transparent 94%, var(--navy) 100%);
+            pointer-events: none;
+            z-index: 2;
+        }
+        /* Refresh button for Hadith (compact icon) */
+        
+        .refresh-hadith {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 9999;
+            pointer-events: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgb(255, 187, 0);
+            border: 1px solid var(--panel-edge);
+            color: rgba(0, 0, 0, 0.72);
+            padding: 6px 14px 6px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: border-color .5s ease, color .5s ease, background .5s ease;
+        }
+        
+        .refresh-hadith::before {
+            content: "↻";
+            display: inline-block;
+            font-size: 14px;
+            line-height: 1;
+            transition: transform .6s cubic-bezier(.22, .61, .36, 1);
+        }
+        
+        .refresh-hadith:hover {
+            border-color: var(--brass);
+            color: var(--brass);
+            background: var(--brass-soft);
+        }
+        
+        .refresh-hadith:hover::before {
+            transform: rotate(180deg);
+        }
+        
+        .refresh-hadith:disabled,
+        .refresh-hadith[disabled] {
+            opacity: 0.5;
+            cursor: default;
+            pointer-events: none;
+        }
+        
+        .hadith-track {
+            display: flex;
+            width: max-content;
+            /* Faster but still readable — shorter duration = faster scroll */
+            animation: hadith-scroll 50s linear infinite;
+        }
+        
+        .hadith-track:hover {
+            animation-play-state: paused;
+        }
+        
+        .hadith-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+            padding: 0 48px;
+            font-size: 13px;
+            color: var(--paper);
+        }
+        
+        .hadith-item .tag {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 10.5px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--brass);
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        
+        .hadith-item .ref {
+            color: var(--muted);
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+        
+        @keyframes hadith-scroll {
+            from {
+                transform: translateX(0);
+            }
+            to {
+                transform: translateX(-50%);
+            }
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            .hadith-track {
+                animation: none;
+            }
+        }
+        
+        .hadith-track.js-paused {
+            animation-play-state: paused;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%) translateY(12px);
+            background: var(--panel);
+            border: 1px solid var(--brass);
+            color: var(--paper);
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 12.5px;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 10000;
+            transition: opacity .4s ease, transform .4s ease;
+        }
+        
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        .dashboard {
+            width: 100%;
+            max-width: 880px;
+            padding: 56px 20px 0;
+        }
+        /* ---------- Header ---------- */
+        
+        .brand-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+        
+        .brand-mark {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: 1px solid var(--panel-edge);
+            background: #e3f1fb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            flex-shrink: 0;
+            overflow: hidden;
+            padding: 0px;
+        }
+        
+        .brand-mark img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .brand-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--muted);
+            letter-spacing: 0.02em;
+        }
+        
+        .eyebrow {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 12px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--brass);
+            margin: 0 0 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .eyebrow::before {
+            content: "";
+            width: 22px;
+            height: 1px;
+            background: var(--brass);
+            display: inline-block;
+        }
+        
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: clamp(26px, 4vw, 36px);
+            line-height: 1.15;
+            margin: 0 0 6px;
+            letter-spacing: -0.01em;
+        }
+        
+        .subhead {
+            color: var(--muted);
+            font-size: 14.5px;
+            margin: 0 0 36px;
+            max-width: 520px;
+            line-height: 1.55;
+        }
+        /* ---------- Clock + Prayer times ---------- */
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 12px;
+            margin-top: 0;
+        }
+        
+        .clock-card {
+            background: var(--panel);
+            border: 1px solid var(--panel-edge);
+            border-radius: 10px;
+            padding: 22px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .clock-time {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 32px;
+            letter-spacing: -0.01em;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .clock-date {
+            color: var(--muted);
+            font-size: 12.5px;
+            margin-top: 6px;
+        }
+        
+        .prayer-card {
+            background: var(--panel);
+            border: 1px solid var(--panel-edge);
+            border-radius: 10px;
+            padding: 20px 22px;
+        }
+        
+        .prayer-card-head {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        
+        .prayer-zone {
+            font-size: 12px;
+            color: var(--muted);
+        }
+        
+        .prayer-row {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+        }
+        
+        .prayer-item {
+            text-align: center;
+            padding: 10px 4px;
+            border-radius: 8px;
+            transition: background .6s ease, border-color .6s ease;
+            border: 1px solid transparent;
+        }
+        
+        .prayer-item.is-next {
+            border-color: var(--brass);
+            background: var(--brass-soft);
+        }
+        
+        .prayer-name {
+            font-size: 10.5px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin: 0 0 6px;
+        }
+        
+        .prayer-item.is-next .prayer-name {
+            color: var(--brass);
+        }
+        
+        .prayer-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .prayer-note {
+            margin-top: 14px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+        
+        @media (max-width:640px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            .prayer-row {
+                grid-template-columns: repeat(3, 1fr);
+                row-gap: 14px;
+            }
+        }
+        /* ---------- Hero card ---------- */
+        
+        .hero {
+            background: linear-gradient(180deg, var(--panel), var(--panel) 60%, #1B2431);
+            border: 1px solid var(--panel-edge);
+            border-radius: var(--radius);
+            padding: 36px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, transparent 40%, var(--brass-soft) 50%, transparent 60%);
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .hero-text .today-label {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 12px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin: 0 0 12px;
+        }
+        
+        .hero-text .verdict {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: clamp(34px, 5vw, 48px);
+            line-height: 1;
+            margin: 0 0 14px;
+            letter-spacing: -0.01em;
+        }
+        
+        .verdict .colorword {
+            position: relative;
+        }
+        
+        .hero-text .date-note {
+            color: var(--muted);
+            font-size: 14px;
+            margin: 0;
+        }
+        
+        .hero-text .date-note strong {
+            color: var(--paper);
+            font-weight: 500;
+        }
+        /* ---------- Shirt SVG + slow corporate hover ---------- */
+        
+        .shirt-stage {
+            width: 190px;
+            height: 190px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .shirt-stage svg,
+        .shirt-stage img {
+            width: 180px;
+            height: 180px;
+            overflow: visible;
+            object-fit: contain;
+        }
+        
+        .shirt-fill-current {
+            transition: fill 1.4s cubic-bezier(.22, .61, .36, 1), opacity 1.4s cubic-bezier(.22, .61, .36, 1);
+        }
+        
+        .shirt-fill-shadow {
+            transition: fill 1.4s cubic-bezier(.22, .61, .36, 1);
+        }
+        
+        .shirt-stage:hover .garment {
+            transform: translateY(-3px);
+        }
+        
+        .garment {
+            transition: transform 1.2s cubic-bezier(.22, .61, .36, 1);
+        }
+        
+        .shirt-stage:hover .shirt-fill-current.alt {
+            opacity: 1;
+        }
+        
+        .shirt-fill-current.alt {
+            opacity: 0;
+            transition: opacity 1.6s cubic-bezier(.22, .61, .36, 1);
+        }
+        
+        .stitch {
+            stroke-dasharray: 3 4;
+            stroke: var(--brass);
+            opacity: 0.55;
+        }
+        /* ---------- Week strip ---------- */
+        
+        .strip-label {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 12px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin: 44px 0 16px;
+        }
+        
+        .strip-label-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 44px 0 16px;
+        }
+        
+        .strip-label-row .strip-label {
+            margin: 0;
+        }
+        
+        .month-nav {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .month-nav button {
+            background: var(--panel);
+            border: 1px solid var(--panel-edge);
+            color: var(--paper);
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: border-color .5s ease, color .5s ease;
+        }
+        
+        .month-nav button:hover {
+            border-color: var(--brass);
+            color: var(--brass);
+        }
+        
+        .month-nav button:disabled {
+            opacity: 0.35;
+            cursor: default;
+        }
+        
+        .month-nav button:disabled:hover {
+            border-color: var(--panel-edge);
+            color: var(--paper);
+        }
+        
+        .month-nav .reset-link {
+            font-size: 11.5px;
+            color: var(--brass);
+            cursor: pointer;
+            background: none;
+            border: none;
+            width: auto;
+            padding: 0 2px;
+        }
+        
+        .strip {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+        }
+        
+        .week-card {
+            background: var(--panel);
+            border: 1px solid var(--panel-edge);
+            border-radius: 10px;
+            padding: 18px 18px 20px;
+            position: relative;
+            transition: border-color .6s ease, transform .6s ease;
+        }
+        
+        .week-card:hover {
+            border-color: var(--brass);
+            transform: translateY(-2px);
+        }
+        
+        .week-card.is-today {
+            border-color: var(--brass);
+            background: linear-gradient(180deg, #232C3A, var(--panel));
+        }
+        
+        .week-card.is-today::before {
+            content: "TODAY";
+            position: absolute;
+            top: -9px;
+            left: 14px;
+            background: var(--brass);
+            color: #1a1408;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 9.5px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            padding: 2px 8px;
+            border-radius: 20px;
+        }
+        
+        .week-ordinal {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 11px;
+            letter-spacing: 0.1em;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin: 0 0 8px;
+        }
+        
+        .week-date {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 19px;
+            font-weight: 600;
+            margin: 0 0 14px;
+        }
+        
+        .swatch-row {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+        
+        .swatch {
+            width: 15px;
+            height: 15px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            flex-shrink: 0;
+        }
+        
+        .swatch.white {
+            background: var(--shirt-white);
+        }
+        
+        .swatch.black {
+            background: var(--shirt-black);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .swatch-text {
+            font-size: 13.5px;
+            font-weight: 500;
+        }
+        /* ---------- Footer note ---------- */
+        
+        .footnote {
+            margin-top: 32px;
+            padding-top: 20px;
+            border-top: 1px solid var(--panel-edge);
+            color: var(--muted);
+            font-size: 12.5px;
+            line-height: 1.6;
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .footnote b {
+            color: var(--muted);
+            font-weight: 600;
+        }
+        
+        @media (max-width:560px) {
+            .hero {
+                flex-direction: column-reverse;
+                text-align: center;
+                padding: 28px 24px;
+            }
+            .hero-text .date-note,
+            .hero-text .today-label {
+                text-align: center;
+            }
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-  <div class="hadith-bar">
-    <a id="refreshHadithBtn" class="refresh-hadith" title="Refresh Hadith" aria-label="Refresh Hadith"
-      href="?refreshHadith=1" style="z-index:9999;pointer-events:auto;padding:6px 10px;text-decoration:none;">
-      Refresh
-    </a>
-    <div class="hadith-track" id="hadithTrack">
-      <div class="hadith-item">
-        <span class="tag">Hadith of the Day</span>
-        <span id="hadithText">Loading today's hadith…</span>
-        <span class="ref" id="hadithRef"></span>
-      </div>
-      <div class="hadith-item" aria-hidden="true">
-        <span class="tag">Hadith of the Day</span>
-        <span id="hadithTextDup">Loading today's hadith…</span>
-        <span class="ref" id="hadithRefDup"></span>
-      </div>
-    </div>
-  </div>
-
-  <div class="dashboard">
-    <div class="brand-row">
-      <div class="brand-mark">
-        <img src="gmilogoold.png" alt="German-Malaysian Institute"
-          onerror="this.onerror=null; this.style.display='none'; this.parentElement.textContent='GMI';">
-      </div>
-      <span class="brand-name">German-Malaysian Institute</span>
-    </div>
-    <p class="eyebrow">GMI Corporate Shirt — Dress Code</p>
-    <h1>Wednesday Shirt Colour</h1>
-    <p class="subhead">Colour rotates automatically by the real calendar — 1st &amp; 3rd Wednesday white, 2nd &amp; 4th
-      Wednesday black.</p>
-
-    <div class="info-grid">
-      <div class="clock-card">
-        <div class="clock-time" id="clockTime">--:--:--</div>
-        <div class="clock-date" id="clockDate">Loading…</div>
-      </div>
-      <div class="prayer-card">
-        <div class="prayer-card-head">
-          <p class="strip-label" style="margin:0;">Prayer Times Today</p>
-          <span class="prayer-zone" id="prayerZoneLabel">Zone SGR01 — Kajang / Selangor</span>
+    <div class="hadith-bar">
+        <a id="refreshHadithBtn" class="refresh-hadith" title="Refresh Hadith" aria-label="Refresh Hadith" href="?refreshHadith=1">Refresh Hadith</a>
+        <div class="hadith-track" id="hadithTrack">
+            <div class="hadith-item">
+                <span class="tag">Hadith of the Day</span>
+                <span id="hadithText">Loading today's hadith…</span>
+                <span class="ref" id="hadithRef"></span>
+            </div>
+            <div class="hadith-item" aria-hidden="true">
+                <span class="tag">Hadith of the Day</span>
+                <span id="hadithTextDup">Loading today's hadith…</span>
+                <span class="ref" id="hadithRefDup"></span>
+            </div>
         </div>
-        <div class="prayer-row" id="prayerRow">
-          <div class="prayer-item">
-            <p class="prayer-name">Imsak</p>
-            <p class="prayer-value">--:--</p>
-          </div>
-          <div class="prayer-item">
-            <p class="prayer-name">Subuh</p>
-            <p class="prayer-value">--:--</p>
-          </div>
-          <div class="prayer-item">
-            <p class="prayer-name">Zohor</p>
-            <p class="prayer-value">--:--</p>
-          </div>
-          <div class="prayer-item">
-            <p class="prayer-name">Asar</p>
-            <p class="prayer-value">--:--</p>
-          </div>
-          <div class="prayer-item">
-            <p class="prayer-name">Maghrib</p>
-            <p class="prayer-value">--:--</p>
-          </div>
-          <div class="prayer-item">
-            <p class="prayer-name">Isyak</p>
-            <p class="prayer-value">--:--</p>
-          </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <div class="dashboard">
+        <div class="brand-row">
+            <div class="brand-mark">
+                <img src="gmilogoold.png" alt="German-Malaysian Institute" onerror="this.onerror=null; this.style.display='none'; this.parentElement.textContent='GMI';">
+            </div>
+            <span class="brand-name">German-Malaysian Institute</span>
         </div>
-        <p class="prayer-source" id="prayerNote">Fetching today's prayer schedule…</p>
-        <p class="prayer-note">Prayer times from JAKIM e-Solat (zone SGR01)</p>
-      </div>
+        <p class="eyebrow">GMI Corporate Shirt — Dress Code</p>
+        <h1>Wednesday Shirt Colour</h1>
+        <p class="subhead">Colour rotates automatically by the real calendar — 1st &amp; 3rd Wednesday white, 2nd &amp; 4th Wednesday black.</p>
+
+        <div class="info-grid">
+            <div class="clock-card">
+                <div class="clock-time" id="clockTime">--:--:--</div>
+                <div class="clock-date" id="clockDate">Loading…</div>
+            </div>
+            <div class="prayer-card">
+                <div class="prayer-card-head">
+                    <p class="strip-label" style="margin:0;">Prayer Times Today</p>
+                    <span class="prayer-zone" id="prayerZoneLabel">Zone SGR01 — Kajang / Selangor</span>
+                </div>
+                <div class="prayer-row" id="prayerRow">
+                    <div class="prayer-item">
+                        <p class="prayer-name">Imsak</p>
+                        <p class="prayer-value">--:--</p>
+                    </div>
+                    <div class="prayer-item">
+                        <p class="prayer-name">Subuh</p>
+                        <p class="prayer-value">--:--</p>
+                    </div>
+                    <div class="prayer-item">
+                        <p class="prayer-name">Zohor</p>
+                        <p class="prayer-value">--:--</p>
+                    </div>
+                    <div class="prayer-item">
+                        <p class="prayer-name">Asar</p>
+                        <p class="prayer-value">--:--</p>
+                    </div>
+                    <div class="prayer-item">
+                        <p class="prayer-name">Maghrib</p>
+                        <p class="prayer-value">--:--</p>
+                    </div>
+                    <div class="prayer-item">
+                        <p class="prayer-name">Isyak</p>
+                        <p class="prayer-value">--:--</p>
+                    </div>
+                </div>
+                <p class="prayer-source" id="prayerNote">Fetching today's prayer schedule…</p>
+                <p class="prayer-note">Prayer times from JAKIM e-Solat (zone SGR01)</p>
+            </div>
+        </div>
+
+        <br>
+
+        <div class="hero">
+            <div class="hero-text">
+                <p class="today-label" id="todayLabel">Loading…</p>
+                <h2 class="verdict" id="verdictText">—</h2>
+                <p class="date-note" id="dateNote">—</p>
+            </div>
+            <div class="shirt-stage">
+                <img id="shirtImage" src="gmibajuputih.png" alt="GMI shirt" aria-hidden="true" onerror="this.onerror=null; this.style.opacity=0.6;" />
+            </div>
+        </div>
+
+        <div class="strip-label-row">
+            <p class="strip-label" id="monthLabel">This Month's Wednesdays</p>
+            <div class="month-nav">
+                <button id="prevMonthBtn" aria-label="Previous month">‹</button>
+                <button class="reset-link" id="resetMonthBtn">Today</button>
+                <button id="nextMonthBtn" aria-label="Next month">›</button>
+            </div>
+        </div>
+        <div class="strip" id="weekStrip"></div>
+
+        <div class="footnote">
+            <span><b>Note —</b> a rare 5th Wednesday defaults to white.</span>
+            <span><b>Copyright —</b> &copy; 2026 KRISS - All rights reserved.</span>
+        </div>
     </div>
 
-    <br>
+    <script>
+        (function() {
+            const COLOR_BY_ORDINAL = {
+                1: 'white',
+                2: 'black',
+                3: 'white',
+                4: 'black',
+                5: 'white'
+            };
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-    <div class="hero">
-      <div class="hero-text">
-        <p class="today-label" id="todayLabel">Loading…</p>
-        <h2 class="verdict" id="verdictText">—</h2>
-        <p class="date-note" id="dateNote">—</p>
-      </div>
-      <div class="shirt-stage">
-        <img id="shirtImage" src="gmibajuputih.png" alt="GMI shirt" aria-hidden="true"
-          onerror="this.onerror=null; this.style.opacity=0.6;" />
-      </div>
-    </div>
+            const realNow = new Date();
+            const realYear = realNow.getFullYear();
+            const realMonth = realNow.getMonth();
+            const todayStr = realNow.toDateString();
 
-    <div class="strip-label-row">
-      <p class="strip-label" id="monthLabel">This Month's Wednesdays</p>
-      <div class="month-nav">
-        <button id="prevMonthBtn" aria-label="Previous month">‹</button>
-        <button class="reset-link" id="resetMonthBtn">Today</button>
-        <button id="nextMonthBtn" aria-label="Next month">›</button>
-      </div>
-    </div>
-    <div class="strip" id="weekStrip"></div>
+            let viewYear = realYear;
+            let viewMonth = realMonth;
 
-    <div class="footnote">
-      <span><b>Note —</b> a rare 5th Wednesday defaults to white.</span>
-      <span><b>Copyright —</b> &copy; 2026 KRISS - All rights reserved.</span>
-    </div>
-  </div>
+            const strip = document.getElementById('weekStrip');
+            const monthLabel = document.getElementById('monthLabel');
+            const prevBtn = document.getElementById('prevMonthBtn');
+            const nextBtn = document.getElementById('nextMonthBtn');
+            const resetBtn = document.getElementById('resetMonthBtn');
 
-  <script>
-    (function () {
-      const COLOR_BY_ORDINAL = { 1: 'white', 2: 'black', 3: 'white', 4: 'black', 5: 'white' };
-      const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-      const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            function getWednesdays(year, month) {
+                const list = [];
+                const d = new Date(year, month, 1);
+                while (d.getMonth() === month) {
+                    if (d.getDay() === 3) list.push(new Date(d));
+                    d.setDate(d.getDate() + 1);
+                }
+                return list;
+            }
 
-      const realNow = new Date();
-      const realYear = realNow.getFullYear();
-      const realMonth = realNow.getMonth();
-      const todayStr = realNow.toDateString();
+            function renderStrip(year, month) {
+                const wednesdays = getWednesdays(year, month);
+                strip.innerHTML = '';
+                wednesdays.forEach((wed, idx) => {
+                    const ordinal = idx + 1;
+                    const color = COLOR_BY_ORDINAL[ordinal] || 'white';
+                    const isToday = wed.toDateString() === todayStr;
 
-      let viewYear = realYear;
-      let viewMonth = realMonth;
+                    const card = document.createElement('div');
+                    card.className = 'week-card' + (isToday ? ' is-today' : '');
 
-      const strip = document.getElementById('weekStrip');
-      const monthLabel = document.getElementById('monthLabel');
-      const prevBtn = document.getElementById('prevMonthBtn');
-      const nextBtn = document.getElementById('nextMonthBtn');
-      const resetBtn = document.getElementById('resetMonthBtn');
-
-      function getWednesdays(year, month) {
-        const list = [];
-        const d = new Date(year, month, 1);
-        while (d.getMonth() === month) {
-          if (d.getDay() === 3) list.push(new Date(d));
-          d.setDate(d.getDate() + 1);
-        }
-        return list;
-      }
-
-      function renderStrip(year, month) {
-        const wednesdays = getWednesdays(year, month);
-        strip.innerHTML = '';
-        wednesdays.forEach((wed, idx) => {
-          const ordinal = idx + 1;
-          const color = COLOR_BY_ORDINAL[ordinal] || 'white';
-          const isToday = wed.toDateString() === todayStr;
-
-          const card = document.createElement('div');
-          card.className = 'week-card' + (isToday ? ' is-today' : '');
-
-          const ordLabel = ['1st', '2nd', '3rd', '4th', '5th'][idx] + ' Wednesday';
-          card.innerHTML = `
+                    const ordLabel = ['1st', '2nd', '3rd', '4th', '5th'][idx] + ' Wednesday';
+                    card.innerHTML = `
         <p class="week-ordinal">${ordLabel}</p>
         <p class="week-date">${monthNames[month].slice(0, 3)} ${wed.getDate()}</p>
         <div class="swatch-row">
@@ -799,322 +843,718 @@
           <span class="swatch-text">${color === 'white' ? 'White shirt' : 'Black shirt'}</span>
         </div>
       `;
-          strip.appendChild(card);
-        });
+                    strip.appendChild(card);
+                });
 
-        monthLabel.textContent = `${monthNames[month]} ${year} — Wednesdays`;
+                monthLabel.textContent = `${monthNames[month]} ${year} — Wednesdays`;
 
-        const monthsFromReal = (year - realYear) * 12 + (month - realMonth);
-        prevBtn.disabled = monthsFromReal <= -12;
-        nextBtn.disabled = monthsFromReal >= 12;
-        resetBtn.style.display = (year === realYear && month === realMonth) ? 'none' : 'inline-flex';
-      }
-
-      prevBtn.addEventListener('click', () => {
-        viewMonth--;
-        if (viewMonth < 0) { viewMonth = 11; viewYear--; }
-        renderStrip(viewYear, viewMonth);
-      });
-      nextBtn.addEventListener('click', () => {
-        viewMonth++;
-        if (viewMonth > 11) { viewMonth = 0; viewYear++; }
-        renderStrip(viewYear, viewMonth);
-      });
-      resetBtn.addEventListener('click', () => {
-        viewYear = realYear; viewMonth = realMonth;
-        renderStrip(viewYear, viewMonth);
-      });
-
-      renderStrip(viewYear, viewMonth);
-
-      // ---------- Hero (always reflects the real current day, never the browsed month) ----------
-      const realWednesdays = getWednesdays(realYear, realMonth);
-      let todayEntry = null;
-      realWednesdays.forEach((wed, idx) => {
-        if (wed.toDateString() === todayStr) {
-          const ordinal = idx + 1;
-          todayEntry = { wed, ordinal, color: COLOR_BY_ORDINAL[ordinal] || 'white' };
-        }
-      });
-
-      const todayLabel = document.getElementById('todayLabel');
-      const verdictText = document.getElementById('verdictText');
-      const dateNote = document.getElementById('dateNote');
-      const shirtImg = document.getElementById('shirtImage');
-
-      const fullDateStr = `${dayNames[realNow.getDay()]}, ${monthNames[realMonth]} ${realNow.getDate()}, ${realYear}`;
-
-      if (todayEntry) {
-        todayLabel.textContent = "Today";
-        verdictText.innerHTML = `Wear <span class="colorword">${todayEntry.color === 'white' ? 'White' : 'Black'}</span>`;
-        dateNote.innerHTML = `<strong>${fullDateStr}</strong> — ${['1st', '2nd', '3rd', '4th', '5th'][todayEntry.ordinal - 1]} Wednesday of the month.`;
-        shirtImg.src = todayEntry.color === 'white' ? 'gmibajuputih.png' : 'gmibajuhitam.png';
-        shirtImg.alt = todayEntry.color === 'white' ? 'White corporate shirt' : 'Black corporate shirt';
-      } else {
-        let next = realWednesdays.find(w => w > realNow);
-        let nextOrdinal = next ? realWednesdays.indexOf(next) + 1 : null;
-        if (!next) {
-          const nd = new Date(realYear, realMonth + 1, 1);
-          while (nd.getDay() !== 3) { nd.setDate(nd.getDate() + 1); }
-          next = nd; nextOrdinal = 1;
-        }
-        const nextColor = COLOR_BY_ORDINAL[nextOrdinal] || 'white';
-        todayLabel.textContent = "Not a Wednesday — next up";
-        verdictText.innerHTML = `Wear <span class="colorword">${nextColor === 'white' ? 'White' : 'Black'}</span>`;
-        dateNote.innerHTML = `Today is <strong>${fullDateStr}</strong>. Next Wednesday is <strong>${monthNames[next.getMonth()]} ${next.getDate()}</strong> — ${['1st', '2nd', '3rd', '4th', '5th'][nextOrdinal - 1]} Wednesday.`;
-        shirtImg.src = nextColor === 'white' ? 'gmibajuputih.png' : 'gmibajuhitam.png';
-        shirtImg.alt = nextColor === 'white' ? 'White corporate shirt' : 'Black corporate shirt';
-      }
-    })();
-
-    // ---------- Live clock (Malaysia time) ----------
-    (function () {
-      const timeEl = document.getElementById('clockTime');
-      const dateEl = document.getElementById('clockDate');
-      function tick() {
-        const now = new Date();
-        timeEl.textContent = now.toLocaleTimeString('en-MY', { hour12: false, timeZone: 'Asia/Kuala_Lumpur' });
-        dateEl.textContent = now.toLocaleDateString('en-MY', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Kuala_Lumpur' });
-      }
-      tick();
-      setInterval(tick, 1000);
-    })();
-
-    // ---------- Prayer times (JAKIM e-Solat via waktusolat.app) ----------
-    (function () {
-      const ZONE = 'SGR01'; // change this to your area's zone code — see https://api.waktusolat.app/zones
-      const noteEl = document.getElementById('prayerNote');
-      const items = document.querySelectorAll('#prayerRow .prayer-item');
-      const order = ['imsak', 'fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
-
-      fetch(`https://api.waktusolat.app/v2/solat/${ZONE}`)
-        .then(res => {
-          if (!res.ok) throw new Error('Request failed');
-          return res.json();
-        })
-        .then(data => {
-          const todayNum = new Date().toLocaleString('en-US', { day: 'numeric', timeZone: 'Asia/Kuala_Lumpur' });
-          const todayEntry = data.prayers.find(p => String(p.day) === String(Number(todayNum)));
-          if (!todayEntry) throw new Error('No entry for today');
-
-          const fajrDate = new Date(todayEntry.fajr * 1000);
-          const imsakDate = new Date(fajrDate.getTime() - 10 * 60 * 1000);
-
-          const times = {
-            imsak: imsakDate,
-            fajr: fajrDate,
-            dhuhr: new Date(todayEntry.dhuhr * 1000),
-            asr: new Date(todayEntry.asr * 1000),
-            maghrib: new Date(todayEntry.maghrib * 1000),
-            isha: new Date(todayEntry.isha * 1000)
-          };
-
-          const fmt = t => t.toLocaleTimeString('en-MY', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Kuala_Lumpur' });
-
-          const now = new Date();
-          const comparable = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
-          let nextKey = comparable.find(k => times[k] > now);
-
-          order.forEach((key, idx) => {
-            const el = items[idx];
-            el.querySelector('.prayer-value').textContent = fmt(times[key]);
-            el.classList.toggle('is-next', key === nextKey);
-          });
-
-          noteEl.textContent = nextKey
-            ? `Next: ${nextKey.charAt(0).toUpperCase() + nextKey.slice(1)} at ${fmt(times[nextKey])}`
-            : `That's Isyak done for today — next up is Imsak tomorrow.`;
-        })
-        .catch(err => {
-          noteEl.textContent = "Couldn't load live prayer times right now — check e-solat.gov.my directly.";
-        });
-    })();
-
-    // ---------- Hadith of the Day (Sahih Bukhari / Sahih Muslim, changes once per day) ----------
-    (function () {
-      const textEl = document.getElementById('hadithText');
-      const refEl = document.getElementById('hadithRef');
-      const textDupEl = document.getElementById('hadithTextDup');
-      const refDupEl = document.getElementById('hadithRefDup');
-      // Hadith status display removed to avoid visual clutter on the marquee
-
-      function todayKeyMY() {
-        // Malaysia's calendar date, so it flips at Malaysia midnight rather than the visitor's local midnight
-        return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kuala_Lumpur' }); // YYYY-MM-DD
-      }
-
-      function paint(text, ref) {
-        textEl.textContent = text;
-        refEl.textContent = ref;
-        textDupEl.textContent = text;
-        refDupEl.textContent = ref;
-      }
-
-      function cacheAndPaint(text, ref) {
-        paint(text, ref);
-        try {
-          localStorage.setItem('dailyHadith', JSON.stringify({ date: todayKeyMY(), text, ref }));
-        } catch (e) { /* localStorage unavailable — no big deal, just refetches next load */ }
-      }
-
-      // Try today's cached hadith first, so every page load on the same day shows the same one
-      const _forcedRefreshParam = (function () { try { return new URLSearchParams(window.location.search).get('refreshHadith') === '1'; } catch (e) { return false; } })();
-      try {
-        const cached = JSON.parse(localStorage.getItem('dailyHadith') || 'null');
-        // If a manual refresh was requested via URL, clear the cached entry
-        if (_forcedRefreshParam && cached) {
-          try { localStorage.removeItem('dailyHadith'); } catch (e) { /* ignore */ }
-        }
-        // Validate cache: ensure it's for today and doesn't contain placeholder or error text
-        if (!_forcedRefreshParam && cached && cached.date === todayKeyMY()) {
-          const badPlaceholder = /unavailable|couldn't load|hadith text unavailable/i;
-          const refEmptyHash = /#\s*$|,#\s*$/; // trailing # from older responses
-          if (cached.text && !badPlaceholder.test(cached.text) && !(cached.ref && refEmptyHash.test(cached.ref))) {
-            paint(cached.text, cached.ref);
-            return;
-          } else {
-            // Remove clearly-bad cached entry so we don't re-use it
-            try { localStorage.removeItem('dailyHadith'); } catch (e) { /* ignore */ }
-          }
-        } else {
-          // no valid cache or refresh requested
-        }
-      } catch (e) { /* cache check failed */ }
-
-      // Deterministic per-day pick between the two Sahih collections
-      const dayNum = Math.floor(Date.now() / 86400000);
-      const collection = (dayNum % 2 === 0) ? 'bukhari' : 'muslim';
-
-      // Local fallback hadiths (used if the external API is unreachable or returns unexpected data).
-      const FALLBACK = {
-        bukhari: [
-          { text: "Actions are (judged) by motives, so each man will have what he intended.", ref: '— Sahih al-Bukhari' },
-          { text: "The best among you are those who have the best manners and character.", ref: '— Sahih al-Bukhari' }
-        ],
-        muslim: [
-          { text: "None of you truly believes until he loves for his brother what he loves for himself.", ref: '— Sahih Muslim' },
-          { text: "The strong man is not the one who can overpower others; the strong one is the one who controls himself when angry.", ref: '— Sahih Muslim' }
-        ]
-      };
-
-      function pickFallback(randomPick) {
-        const list = FALLBACK[collection] || FALLBACK.bukhari;
-        if (randomPick) {
-          return list[Math.floor(Math.random() * list.length)];
-        }
-        return list[dayNum % list.length];
-      }
-
-      // Fetch function (tries remote API, falls back to local list)
-      // accepts an option to force a random fallback (useful for manual refreshes when API fails)
-      function fetchHadith(options) {
-        options = options || {};
-        // Return the promise so callers can react to completion/failure
-        return fetch(`https://ummahapi.com/api/hadith/random?collection=${collection}`)
-          .then(res => {
-            if (!res.ok) throw new Error('Request failed: ' + res.status);
-            return res.json();
-          })
-          .then(data => {
-            // Defensive checks — different APIs may return different shapes
-            const h = data && (data.data || data.hadith || data[0]) || null;
-            if (h) {
-              const text = h.hadith_english || h.text_en || h.text || h.body || (h[0] && h[0].text) || null;
-              const num = h.number || h.hadith_number || (h[0] && h[0].number) || null;
-              const bookName = collection === 'bukhari' ? 'Sahih al-Bukhari' : 'Sahih Muslim';
-              const ref = `${num ? '— ' + bookName + ', #' + num : '— ' + bookName}`;
-
-              if (text) {
-                cacheAndPaint(text, ref);
-                return { ok: true };
-              }
+                const monthsFromReal = (year - realYear) * 12 + (month - realMonth);
+                prevBtn.disabled = monthsFromReal <= -12;
+                nextBtn.disabled = monthsFromReal >= 12;
+                resetBtn.style.display = (year === realYear && month === realMonth) ? 'none' : 'inline-flex';
             }
 
-            // If we reach here, API response didn't contain usable text — use fallback
-            const fb = pickFallback(options.forceRandomFallback);
-            cacheAndPaint(fb.text, fb.ref);
-            return { ok: false, fallback: true };
-          })
-          .catch(err => {
-            console.error('Hadith fetch error:', err);
-            const fb = pickFallback(options.forceRandomFallback);
-            cacheAndPaint(fb.text, fb.ref);
-            return { ok: false, error: String(err) };
-          });
-      }
+            prevBtn.addEventListener('click', () => {
+                viewMonth--;
+                if (viewMonth < 0) {
+                    viewMonth = 11;
+                    viewYear--;
+                }
+                renderStrip(viewYear, viewMonth);
+            });
+            nextBtn.addEventListener('click', () => {
+                viewMonth++;
+                if (viewMonth > 11) {
+                    viewMonth = 0;
+                    viewYear++;
+                }
+                renderStrip(viewYear, viewMonth);
+            });
+            resetBtn.addEventListener('click', () => {
+                viewYear = realYear;
+                viewMonth = realMonth;
+                renderStrip(viewYear, viewMonth);
+            });
 
-      // Initial fetch if cache wasn't used earlier
-      fetchHadith();
+            renderStrip(viewYear, viewMonth);
 
-      // If page loaded with ?refreshHadith=1 then clear cache and force a refresh, then remove param
-      try {
-        const _params = new URLSearchParams(window.location.search);
-        if (_params.get('refreshHadith') === '1') {
-          // remember previous cached text (if any) so we can detect no-op refreshes
-          const prevCached = JSON.parse(localStorage.getItem('dailyHadith') || 'null');
-          const prevText = prevCached && prevCached.text ? String(prevCached.text) : null;
+            // ---------- Hero (always reflects the real current day, never the browsed month) ----------
+            const realWednesdays = getWednesdays(realYear, realMonth);
+            let todayEntry = null;
+            realWednesdays.forEach((wed, idx) => {
+                if (wed.toDateString() === todayStr) {
+                    const ordinal = idx + 1;
+                    todayEntry = {
+                        wed,
+                        ordinal,
+                        color: COLOR_BY_ORDINAL[ordinal] || 'white'
+                    };
+                }
+            });
 
-          try { localStorage.removeItem('dailyHadith'); } catch (e) { /* ignore */ }
+            const todayLabel = document.getElementById('todayLabel');
+            const verdictText = document.getElementById('verdictText');
+            const dateNote = document.getElementById('dateNote');
+            const shirtImg = document.getElementById('shirtImage');
 
-          fetchHadith({ forceRandomFallback: true }).then(() => {
-            // If the fetch resulted in the same text as before, pick a different random fallback to ensure a visible change
+            const fullDateStr = `${dayNames[realNow.getDay()]}, ${monthNames[realMonth]} ${realNow.getDate()}, ${realYear}`;
+
+            if (todayEntry) {
+                todayLabel.textContent = "Today";
+                verdictText.innerHTML = `Wear <span class="colorword">${todayEntry.color === 'white' ? 'White' : 'Black'}</span>`;
+                dateNote.innerHTML = `<strong>${fullDateStr}</strong> — ${['1st', '2nd', '3rd', '4th', '5th'][todayEntry.ordinal - 1]} Wednesday of the month.`;
+                shirtImg.src = todayEntry.color === 'white' ? 'gmibajuputih.png' : 'gmibajuhitam.png';
+                shirtImg.alt = todayEntry.color === 'white' ? 'White corporate shirt' : 'Black corporate shirt';
+            } else {
+                let next = realWednesdays.find(w => w > realNow);
+                let nextOrdinal = next ? realWednesdays.indexOf(next) + 1 : null;
+                if (!next) {
+                    const nd = new Date(realYear, realMonth + 1, 1);
+                    while (nd.getDay() !== 3) {
+                        nd.setDate(nd.getDate() + 1);
+                    }
+                    next = nd;
+                    nextOrdinal = 1;
+                }
+                const nextColor = COLOR_BY_ORDINAL[nextOrdinal] || 'white';
+                todayLabel.textContent = "Not a Wednesday — next up";
+                verdictText.innerHTML = `Wear <span class="colorword">${nextColor === 'white' ? 'White' : 'Black'}</span>`;
+                dateNote.innerHTML = `Today is <strong>${fullDateStr}</strong>. Next Wednesday is <strong>${monthNames[next.getMonth()]} ${next.getDate()}</strong> — ${['1st', '2nd', '3rd', '4th', '5th'][nextOrdinal - 1]} Wednesday.`;
+                shirtImg.src = nextColor === 'white' ? 'gmibajuputih.png' : 'gmibajuhitam.png';
+                shirtImg.alt = nextColor === 'white' ? 'White corporate shirt' : 'Black corporate shirt';
+            }
+        })();
+
+        // ---------- Live clock (Malaysia time) ----------
+        (function() {
+            const timeEl = document.getElementById('clockTime');
+            const dateEl = document.getElementById('clockDate');
+
+            function tick() {
+                const now = new Date();
+                timeEl.textContent = now.toLocaleTimeString('en-MY', {
+                    hour12: false,
+                    timeZone: 'Asia/Kuala_Lumpur'
+                });
+                dateEl.textContent = now.toLocaleDateString('en-MY', {
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                    timeZone: 'Asia/Kuala_Lumpur'
+                });
+            }
+            tick();
+            setInterval(tick, 1000);
+        })();
+
+        // ---------- Prayer times (JAKIM e-Solat via waktusolat.app) ----------
+        (function() {
+            const ZONE = 'SGR01'; // change this to your area's zone code — see https://api.waktusolat.app/zones
+            const noteEl = document.getElementById('prayerNote');
+            const items = document.querySelectorAll('#prayerRow .prayer-item');
+            const order = ['imsak', 'fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+
+            fetch(`https://api.waktusolat.app/v2/solat/${ZONE}`)
+                .then(res => {
+                    if (!res.ok) throw new Error('Request failed');
+                    return res.json();
+                })
+                .then(data => {
+                    const todayNum = new Date().toLocaleString('en-US', {
+                        day: 'numeric',
+                        timeZone: 'Asia/Kuala_Lumpur'
+                    });
+                    const todayEntry = data.prayers.find(p => String(p.day) === String(Number(todayNum)));
+                    if (!todayEntry) throw new Error('No entry for today');
+
+                    const fajrDate = new Date(todayEntry.fajr * 1000);
+                    const imsakDate = new Date(fajrDate.getTime() - 10 * 60 * 1000);
+
+                    const times = {
+                        imsak: imsakDate,
+                        fajr: fajrDate,
+                        dhuhr: new Date(todayEntry.dhuhr * 1000),
+                        asr: new Date(todayEntry.asr * 1000),
+                        maghrib: new Date(todayEntry.maghrib * 1000),
+                        isha: new Date(todayEntry.isha * 1000)
+                    };
+
+                    const fmt = t => t.toLocaleTimeString('en-MY', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false,
+                        timeZone: 'Asia/Kuala_Lumpur'
+                    });
+
+                    const now = new Date();
+                    const comparable = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+                    let nextKey = comparable.find(k => times[k] > now);
+
+                    order.forEach((key, idx) => {
+                        const el = items[idx];
+                        el.querySelector('.prayer-value').textContent = fmt(times[key]);
+                        el.classList.toggle('is-next', key === nextKey);
+                    });
+
+                    noteEl.textContent = nextKey ?
+                        `Next: ${nextKey.charAt(0).toUpperCase() + nextKey.slice(1)} at ${fmt(times[nextKey])}` :
+                        `That's Isyak done for today — next up is Imsak tomorrow.`;
+                })
+                .catch(err => {
+                    noteEl.textContent = "Couldn't load live prayer times right now — check e-solat.gov.my directly.";
+                });
+        })();
+
+        // ---------- Hadith of the Day (Sahih Bukhari / Sahih Muslim, changes once per day) ----------
+        (function() {
+            const textEl = document.getElementById('hadithText');
+            const refEl = document.getElementById('hadithRef');
+            const textDupEl = document.getElementById('hadithTextDup');
+            const refDupEl = document.getElementById('hadithRefDup');
+            // Hadith status display removed to avoid visual clutter on the marquee
+
+            function todayKeyMY() {
+                // Malaysia's calendar date, so it flips at Malaysia midnight rather than the visitor's local midnight
+                return new Date().toLocaleDateString('en-CA', {
+                    timeZone: 'Asia/Kuala_Lumpur'
+                }); // YYYY-MM-DD
+            }
+
+            function paint(text, ref) {
+                textEl.textContent = text;
+                refEl.textContent = ref;
+                textDupEl.textContent = text;
+                refDupEl.textContent = ref;
+            }
+
+            function cacheAndPaint(text, ref) {
+                paint(text, ref);
+                try {
+                    localStorage.setItem('dailyHadith', JSON.stringify({
+                        date: todayKeyMY(),
+                        text,
+                        ref
+                    }));
+                } catch (e) { /* localStorage unavailable — no big deal, just refetches next load */ }
+            }
+
+            // Try today's cached hadith first, so every page load on the same day shows the same one
+            const _forcedRefreshParam = (function() {
+                try {
+                    return new URLSearchParams(window.location.search).get('refreshHadith') === '1';
+                } catch (e) {
+                    return false;
+                }
+            })();
             try {
-              const newCached = JSON.parse(localStorage.getItem('dailyHadith') || 'null');
-              const newText = newCached && newCached.text ? String(newCached.text) : null;
-              if (prevText && newText && prevText === newText) {
-                let fb = pickFallback(true);
-                // try to pick a different one when possible
+                const cached = JSON.parse(localStorage.getItem('dailyHadith') || 'null');
+                // If a manual refresh was requested via URL, clear the cached entry
+                if (_forcedRefreshParam && cached) {
+                    try {
+                        localStorage.removeItem('dailyHadith');
+                    } catch (e) { /* ignore */ }
+                }
+                // Validate cache: ensure it's for today and doesn't contain placeholder or error text
+                if (!_forcedRefreshParam && cached && cached.date === todayKeyMY()) {
+                    const badPlaceholder = /unavailable|couldn't load|hadith text unavailable/i;
+                    const refEmptyHash = /#\s*$|,#\s*$/; // trailing # from older responses
+                    if (cached.text && !badPlaceholder.test(cached.text) && !(cached.ref && refEmptyHash.test(cached.ref))) {
+                        paint(cached.text, cached.ref);
+                        return;
+                    } else {
+                        // Remove clearly-bad cached entry so we don't re-use it
+                        try {
+                            localStorage.removeItem('dailyHadith');
+                        } catch (e) { /* ignore */ }
+                    }
+                } else {
+                    // no valid cache or refresh requested
+                }
+            } catch (e) { /* cache check failed */ }
+
+            // Deterministic per-day pick between the two Sahih collections
+            const dayNum = Math.floor(Date.now() / 86400000);
+            const collection = (dayNum % 2 === 0) ? 'bukhari' : 'muslim';
+
+            // Local fallback hadiths (used if the external API is unreachable or returns unexpected data).
+            const FALLBACK = {
+                bukhari: [{
+                    text: 'Narrated Abu Mas\'ud: The Prophet (ﷺ) said, "If a man spends on his family (with the intention of having a reward from Allah) sincerely for Allah\'s sake then it is a (kind of) alms-giving in reward for him',
+                    ref: '— Sahih al-Bukhari, #55'
+                }, {
+                    text: 'Narrated Anas: The Prophet (ﷺ) said, "None of you will have faith till he wishes for his (Muslim) brother what he likes for himself',
+                    ref: '— Sahih al-Bukhari, #13'
+                }, {
+                    text: 'Narrated Abu Huraira: "Allah\'s Messenger (ﷺ) said, "By Him in Whose Hands my life is, none of you will have faith till he loves me more than his father and his children',
+                    ref: '— Sahih al-Bukhari, #14'
+                }, {
+                    text: 'Narrated Anas: The Prophet (ﷺ) said, "Love for the Ansar is a sign of faith and hatred for the Ansar is a sign of hypocrisy',
+                    ref: '— Sahih al-Bukhari, #17'
+                }, {
+                    text: 'Narrated \'Abdullah (bin \'Umar): Once Allah\'s Messenger (ﷺ) passed by an Ansari (man) who was admonishing his brother regarding Haya\'. On that Allah\'s Messenger (ﷺ) said, "Leave him as Haya\' is a part of faith." (See Hadith)',
+                    ref: '— Sahih al-Bukhari, #24'
+                }, {
+                    text: 'Narrated Abu Huraira:I have memorized two kinds of knowledge from Allah\'s Messenger (ﷺ) . I have propagated one of them to you and if I propagated the second, then my pharynx (throat) would be cut (i.e. killed)',
+                    ref: '— Sahih al-Bukhari, #120'
+                }, {
+                    text: 'Narrated Anas:The Prophet (ﷺ) said, "A Muslim whose three children die before the age of puberty will be granted Paradise by Allah due to his mercy for them',
+                    ref: '— Sahih al-Bukhari, #1248'
+                }, {
+                    text: 'Narrated Abu Burda:That his father said, "When `Umar was stabbed, Suhaib started crying: O my brother! `Umar said, \'Don\'t you know that the Prophet (ﷺ) said: The deceased is tortured for the weeping of the living\'?',
+                    ref: '— Sahih al-Bukhari, #1290'
+                }, {
+                    text: 'Narrated Anas bin Malik:Allah\'s Messenger (ﷺ) said, "Any Muslim whose three children died before the age of puberty will be granted Paradise by Allah because of His mercy to them',
+                    ref: '— Sahih al-Bukhari, #1381'
+                }, {
+                    text: 'Narrated Abu Huraira:The Prophet (ﷺ) said, "The poor person is not the one who asks a morsel or two (of meals) from the others, but the poor is the one who has nothing and is ashamed to beg from others',
+                    ref: '— Sahih al-Bukhari, #1476'
+                }, {
+                    text: 'Narrated \'Aishah:The Prophet (ﷺ) sent my brother, \'Abdur Rahman with me to Tan\'im for the \'Umra, and he made me ride on the packsaddle (of a camel). \'Umar said, "Be ready to travel for Hajj as it (Hajj) is one of the two kind of Jihad',
+                    ref: '— Sahih al-Bukhari, #1516'
+                }, {
+                    text: 'Narrated Abu Huraira:Allah\'s Messenger (ﷺ) said, "(The performance of) `Umra is an expiation for the sins committed (between it and the previous one). And the reward of Hajj Mabrur (the one accepted by Allah) is nothing except Paradise',
+                    ref: '— Sahih al-Bukhari, #1773'
+                }, {
+                    text: 'Narrated Abu Huraira:The Prophet (ﷺ) said, "If a woman gives something (i.e. in charity) from her husband\'s earnings without his permission, she will get half his reward',
+                    ref: '— Sahih al-Bukhari, #2066'
+                }, {
+                    text: 'Narrated Anas bin Malik:Allah\'s Messenger (ﷺ) said, "Help your brother, whether he is an oppressor or he is an oppressed one',
+                    ref: '— Sahih al-Bukhari, #2443'
+                }, {
+                    text: 'Narrated Abu Huraira:Allah\'s Messenger (ﷺ) said, "When Allah completed the creation, He wrote in His Book which is with Him on His Throne, "My Mercy overpowers My Anger',
+                    ref: '— Sahih al-Bukhari, #3194'
+                }, {
+                    text: 'Narrated `Imran bin Husain:The Prophet (ﷺ) said, "I looked at Paradise and found poor people forming the majority of its inhabitants; and I looked at Hell and saw that the majority of its inhabitants were women',
+                    ref: '— Sahih al-Bukhari, #3241'
+                }, {
+                    text: 'Narrated Usama bin Zaid:That the Prophet (ﷺ) used to take him and Al-Hasan, and used to say, "O Allah! I love them, so please love them," or said something similar',
+                    ref: '— Sahih al-Bukhari, #3747'
+                }, {
+                    text: 'Narrated Al-Bara:I saw the Prophet (ﷺ) carrying Al-Hasan on his shoulder an saying, "O Allah! I love him, so please love him',
+                    ref: '— Sahih al-Bukhari, #3749'
+                }, {
+                    text: 'Narrated Ibn `Abbas:Once the Prophet (ﷺ) embraced me (pressed me to his chest) and said, "O Allah, teach him wisdom (i.e. the understanding of the knowledge of Qur\'an)',
+                    ref: '— Sahih al-Bukhari, #3756'
+                }, {
+                    text: 'Narrated Abu Huraira:that Allah\'s Messenger (ﷺ) informed them (i.e. his companions) of the death of Negus, the king of Ethiopia, on the very day on which the latter died, and said, "Ask Allah\'s Forgiveness for your brother',
+                    ref: '— Sahih al-Bukhari, #3880'
+                }, {
+                    text: 'Narrated Abu Musa:That the Prophet (ﷺ) said, "The good is what Allah gave us later on (after Uhud), and the reward of truthfulness is what Allah gave us after the day (of the battle) of Badr',
+                    ref: '— Sahih al-Bukhari, #3987'
+                }, {
+                    text: 'Narrated Abu Huraira:The Prophet (ﷺ) said, "The people of Yemen have come to you, and they are more soft hearted and gentle hearted people. The capacity for understanding religion is Yemenite and Wisdom is Yemenite',
+                    ref: '— Sahih al-Bukhari, #4390'
+                }, {
+                    text: 'Narrated Ikrima:Ibn `Abbas said ( regarding the verse), "And when the relatives and the orphans and the poor are present at the time of division, "this verse and its order is valid and not abrogated',
+                    ref: '— Sahih al-Bukhari, #4576'
+                }, {
+                    text: 'Narrated `Imran:The Prophet (ﷺ) said, "I looked at Paradise and saw that the majority of its residents were the poor; and I looked at the (Hell) Fire and saw that the majority of its residents were women',
+                    ref: '— Sahih al-Bukhari, #5198'
+                }, {
+                    text: 'Narrated Sahl:Allah\'s Messenger (ﷺ) said, "I and the one who looks after an orphan will be like this in Paradise," showing his middle and index fingers and separating them',
+                    ref: '— Sahih al-Bukhari, #5304'
+                }, {
+                    text: 'Narrated Abu Huraira:The Prophet (ﷺ) said, "If the wife gives of her husband\'s property (something in charity) without his permission, he will get half the reward',
+                    ref: '— Sahih al-Bukhari, #5360'
+                }, {
+                    text: 'Narrated `Aisha:I heard the Prophet (ﷺ) , who was resting against me, saying, "O Allah! Excuse me and bestow Your Mercy on me and let me join with the highest companions (in Paradise)." See Qur\'an',
+                    ref: '— Sahih al-Bukhari, #5674'
+                }, {
+                    text: 'Narrated Abu Huraira: Allah\'s Messenger (ﷺ) said: The cattle (sheep, cows, camels, etc.) suffering from a disease should not be mixed up with healthy cattle, (or said: "Do not put a patient with a healthy person ). " (as a precaution)',
+                    ref: '— Sahih al-Bukhari, #5771'
+                }, {
+                    text: 'Narrated Qatada:I asked Anas, "What kind of clothes was most beloved to the Prophet?" He replied, "The Hibra (a kind of Yemenese cloth)',
+                    ref: '— Sahih al-Bukhari, #5812'
+                }, {
+                    text: 'Narrated Anas bin Malik:The most beloved garment to the Prophet (ﷺ) to wear was the Hibra (a kind of Yemenese cloth)',
+                    ref: '— Sahih al-Bukhari, #5813'
+                }, {
+                    text: 'Narrated Usama bin Zaid:Allah\'s Messenger (ﷺ) used to put me on (one of) his thighs and put Al-Hasan bin `Ali on his other thigh, and then embrace us and say, "O Allah! Please be Merciful to them, as I am merciful to them',
+                    ref: '— Sahih al-Bukhari, #6003'
+                }, {
+                    text: 'Narrated Sahl bin Sa`d:The Prophet (ﷺ) said, "I and the person who looks after an orphan and provides for him, will be in Paradise like this," putting his index and middle fingers together',
+                    ref: '— Sahih al-Bukhari, #6005'
+                }, {
+                    text: 'Narrated Anas bin Malik:The Prophet (ﷺ) said, "If any Muslim plants any plant and a human being or an animal eats of it, he will be rewarded as if he had given that much in charity',
+                    ref: '— Sahih al-Bukhari, #6012'
+                }, {
+                    text: 'Narrated `Aisha:The Prophet (ﷺ) said "Gabriel continued to recommend me about treating the neighbors Kindly and politely so much so that I thought he would order me to make them as my heirs',
+                    ref: '— Sahih al-Bukhari, #6014'
+                }, {
+                    text: 'Narrates Ibn `Umar:Allah\'s Apostle said, Gabriel kept on recommending me about treating the neighbors in a kind and polite manner, so much so that I thought that he would order (me) to make them (my) heirs',
+                    ref: '— Sahih al-Bukhari, #6015'
+                }, {
+                    text: 'Narrated Abu Huraira:Allah\'s Messenger (ﷺ) said, "The strong is not the one who overcomes the people by his strength, but the strong is the one who controls himself while in anger',
+                    ref: '— Sahih al-Bukhari, #6114'
+                }, {
+                    text: 'Narrated Anas bin Malik:The Prophet (ﷺ) used to mix with us to the extent that he would say to a younger brother of mine, \'O Aba `Umair! What did the Nughair (a kind of bird) do?',
+                    ref: '— Sahih al-Bukhari, #6129'
+                }, {
+                    text: 'Narrated Anas:The Prophet (ﷺ) said, "O Allah! There is no life worth living except the life of the Hereafter, so (please) make righteous the Ansar and the Emigrants',
+                    ref: '— Sahih al-Bukhari, #6413'
+                }, {
+                    text: 'Narrated `Imran bin Husain:The Prophet (ﷺ) said, "I looked into Paradise and found that the majority of its dwellers were the poor people, and I looked into the (Hell) Fire and found that the majority of its dwellers were women',
+                    ref: '— Sahih al-Bukhari, #6449'
+                }, {
+                    text: 'Narrated Abu Huraira:Allah\'s Messenger (ﷺ) said, "The (Hell) Fire is surrounded by all kinds of desires and passions, while Paradise is surrounded by all kinds of disliked undesirable things',
+                    ref: '— Sahih al-Bukhari, #6487'
+                }, {
+                    text: 'Narrated `Imran:The Prophet (ﷺ) said, "I looked into paradise and saw that the majority of its people were the poor, and I looked into the Fire and found that the majority of its people were women',
+                    ref: '— Sahih al-Bukhari, #6546'
+                }, {
+                    text: 'Narrated Abu Huraira:I heard the truthful and trusted by Allah (i.e., the Prophet (ﷺ) ) saying, "The destruction of my followers will be through the hands of young men from Quraish',
+                    ref: '— Sahih al-Bukhari, #7058'
+                }, {
+                    text: 'Narrated Hudhaifa:The Prophet (ﷺ) said to the people of Najran, "I will send to you an honest person who is really trustworthy." The Companion, of the Prophet (ﷺ) each desired to be that person, but the Prophet (ﷺ) sent Abu \'Ubaida',
+                    ref: '— Sahih al-Bukhari, #7254'
+                }, {
+                    text: 'Narrated Jarir bin `Abdullah:Allah\'s Messenger (ﷺ) said, "Allah will not be merciful to those who are not merciful to mankind',
+                    ref: '— Sahih al-Bukhari, #7376'
+                }, {
+                    text: 'Narrated Abu Huraira:The Prophet (ﷺ) said, "When Allah created the Creation, He wrote in His Book--and He wrote (that) about Himself, and it is placed with Him on the Throne--\'Verily My Mercy overcomes My Anger',
+                    ref: '— Sahih al-Bukhari, #7404'
+                }, {
+                    text: 'Narrated Abu Huraira:The Prophet (ﷺ) said, "When Allah had finished His creation, He wrote over his Throne: \'My Mercy preceded My Anger',
+                    ref: '— Sahih al-Bukhari, #7422'
+                }, {
+                    text: 'Narrated Abu Huraira:Allah\'s Messenger (ﷺ) said, "When Allah created the creations, He wrote with Him on His Throne: \'My Mercy has preceded My Anger',
+                    ref: '— Sahih al-Bukhari, #7453'
+                }, {
+                    text: 'Narrated Abu Huraira:I heard Allah\'s Messenger (ﷺ) saying, "Before Allah created the creations, He wrote a Book (wherein He has written): My Mercy has preceded my Anger." and that (Book) is written with Him over the Throne',
+                    ref: '— Sahih al-Bukhari, #7553'
+                }, {
+                    text: 'Narrated \'Abdullah bin \'Amr: The Prophet (ﷺ) said, "A Muslim is the one who avoids harming Muslims with his tongue and hands. And a Muhajir (emigrant) is the one who gives up (abandons) all what Allah has forbidden',
+                    ref: '— Sahih al-Bukhari, #10'
+                }, {
+                    text: 'Narrated Abu Musa: Some people asked Allah\'s Messenger (ﷺ), "Whose Islam is the best? i.e. (Who is a very good Muslim)?" He replied, "One who avoids harming the Muslims with his tongue and hands',
+                    ref: '— Sahih al-Bukhari, #11'
+                }],
+                muslim: [{
+                    text: 'Abu Huraira reported Allah\'s Messenger (ﷺ) as saying:Charity does not decrease wealth, no one forgives another except that Allah increases his honor, and no one humbles himself for the sake of Allah except that Allah raises his status',
+                    ref: '— Sahih Muslim, #6592'
+                }, {
+                    text: 'Abdullah b. \'Umar (Allah be pleased with them) said:I heard Allah\'s Messenger (ﷺ) as saying: He who patiently endured the hardships and rigours of (this city, i. e. Medina), I would be his witness and intercessor on the Day of Resurrection',
+                    ref: '— Sahih Muslim, #3346'
+                }, {
+                    text: 'Abu Huraira (Allah be pleased with him) used to say:The worst kind of food is the wedding feast to which the rich are invited and the poor are ignored. He who does not come to the feast, he in fact disobeys Allah and His Messenger (ﷺ)',
+                    ref: '— Sahih Muslim, #3521'
+                }, {
+                    text: 'Ibn \'Umar (Allah be pleased with them) reported:Allah\'s Messenger (ﷺ) asked a person from the Anger and his wife to invoke curse (upon one another in order to testify to their truthfulness), and then effected separation between them',
+                    ref: '— Sahih Muslim, #3753'
+                }, {
+                    text: 'It is narrated on the authority of Abu Huraira that the Messenger of Allah (may peace and blessing be upon him) observed:He will not enter Paradise whose neighbour is not secure from his wrongful conduct',
+                    ref: '— Sahih Muslim, #172'
+                }, {
+                    text: 'It is narrated on the authority of Anas that the Apostle (may peace and blessings be upon him) said:The love of the Ansar is the sign of faith and hatred against them is the sign of dissemblance',
+                    ref: '— Sahih Muslim, #236'
+                }, {
+                    text: 'Ibn \'Abbas reported:Allah has prescribed the prayer by the tongue of your Apostle (ﷺ) as two rak\'ahs for the traveller, four for the resident, and one in danger',
+                    ref: '— Sahih Muslim, #1576'
+                }, {
+                    text: 'In the hadith transmitted by Yahya b. Sa\'id on the authority of Qatada (the words are):(The believing servant) finds relief from the troubles of the world and its hardships and (gets into) the Mercy of Allah',
+                    ref: '— Sahih Muslim, #2203'
+                }, {
+                    text: 'Ibn Abbas (Allah be pleased with them) reported:A woman lifted up her child and said: Messenger of Allah, would the child be credited with having performed the Hajj? Thereupon he said: Yes, and there would be a reward for you',
+                    ref: '— Sahih Muslim, #3254'
+                }, {
+                    text: 'AbduUah b. Zaid al-Mazini (Allah be pleased with him) reported Allah\'s Messenger (ﷺ) as saying:That which is between my house" and my pulpit is a garden from the gardens of Paradise',
+                    ref: '— Sahih Muslim, #3368'
+                }, {
+                    text: 'Anas b. Malik (Allah be pleased with him) reported Allah\'s Messenger (way peace be upon him) as saying:Uhud is a mountain which loves us and which we love',
+                    ref: '— Sahih Muslim, #3372'
+                }, {
+                    text: 'In the hadith transmitted on the authority of Shu\'ba it was stated that Ibn Umar (Allah be pleased with them) was asked what good condition implied. He said:When (the danger of) blight is no more',
+                    ref: '— Sahih Muslim, #3870'
+                }, {
+                    text: 'Ibn Abbas (Allah be pleased with them) reported Allah\'s Apostle (ﷺ) as saying:He who has land, it is better for him that he should let it out to his brother',
+                    ref: '— Sahih Muslim, #3961'
+                }, {
+                    text: 'Nu\'man b. Bashir (Allah be pleased with them) reported that Allah\'s Messenger (ﷺ) said to his father:Call me not as witness to an injustice',
+                    ref: '— Sahih Muslim, #4184'
+                }, {
+                    text: 'Abu Huraira reported Allah\'s Messenger (ﷺ) as saying:Let him be humbled, let him be humbled. It was said: Allah\'s Messenger, who is he? He said. He who finds his parents in old age, either one or both of them, and does not enter Paradise',
+                    ref: '— Sahih Muslim, #6511'
+                }, {
+                    text: 'Abdullah b. Umar reported Allah\'s Apostle (ﷺ) as saying:The finest act of goodness is that a person should treat kindly the loved ones of his father',
+                    ref: '— Sahih Muslim, #6514'
+                }, {
+                    text: 'Thauban reported Allah\'s Apostle (ﷺ) as saying:Verily, when a Muslim visits his brother in Islam he is supposed to remain in the fruit garden of Paradise until he returns',
+                    ref: '— Sahih Muslim, #6553'
+                }, {
+                    text: 'A\'isha reported Allah\'s Messenger (ﷺ) as saying:Gabriel impressed upon me (kind treatment) towards the neighbour (so much) that I thought as if he would confer upon him the (right) of inheritance',
+                    ref: '— Sahih Muslim, #6685'
+                }, {
+                    text: 'Ibn Umar reported Allah\'s Messenger (ﷺ) as saying:Gabriel impressed upon me (the kind treatment) towards the neighbour (so much) that I thought as if he would soon confer upon him the (right) of inheritance',
+                    ref: '— Sahih Muslim, #6687'
+                }, {
+                    text: 'Ibn Abbas reported that Allah\'s Messenger (ﷺ) said:I had a chance to look into the Paradise and I found that majority of the people was poor and I looked into the Fire and there I found the majority constituted by women',
+                    ref: '— Sahih Muslim, #6938'
+                }, {
+                    text: 'Anas b. Malik reported:The Paradise is surrounded by hardships and the Hell-Fire is surrounded by temptations',
+                    ref: '— Sahih Muslim, #7130'
+                }, {
+                    text: 'It is narrated on the authority of \'Uthman that the Messenger of Allah (ﷺ) said. He who died knowing (fully well) that there is no god but Allah entered Paradise',
+                    ref: '— Sahih Muslim, #136'
+                }, {
+                    text: 'It is narrated on the authority of Jabir that he heard the (Holy Prophet) say:A Muslim is he from whose hand and tongue the Muslims are safe',
+                    ref: '— Sahih Muslim, #162'
+                }, {
+                    text: 'It is narrated on the authority of Abu Musa Ash\'ari:I asked the Messenger of Allah which (attribute) of Islam is more excellent. Upon this he remarked: One in which the Muslims are safe, protected from the tongue and hand of (other Muslims)',
+                    ref: '— Sahih Muslim, #163'
+                }, {
+                    text: 'It is reported on the authority of Jabir b. Abdullah that the Messenger of Allah (may peace and, blessings be upon him) observed:The callousness of heart and sternness is in the East and faith is among the people of the Hijaz',
+                    ref: '— Sahih Muslim, #193'
+                }, {
+                    text: 'It is narrated on the authority of Tamim ad-Dari that the Prophet (ﷺ) said:"The Religion is sincerity." We said, "To whom?" He said "To Allah, to His Book, To His Messenger, and to the leaders of the Muslims and their masses',
+                    ref: '— Sahih Muslim, #196'
+                }, {
+                    text: 'It is reported on the authority of \'Abdullah that the Messenger of Allah observed:The best of\' the deeds or deed is the (observance of) prayer at its proper time and kindness to the parents',
+                    ref: '— Sahih Muslim, #256'
+                }, {
+                    text: 'It is narrated on the authority of \'Abdullah that the Messenger of Allah (ﷺ) observed:He who has in his heart the weight of a mustard seed of pride shall not enter Paradise',
+                    ref: '— Sahih Muslim, #267'
+                }, {
+                    text: 'It is narrated on the authority of Jabir b. Abdullah:I heard the Messenger of Allah (ﷺ) saying: He who met Allah without associating anything with Allah entered Paradise and he who met Him associating (anything) with Him entered Fire',
+                    ref: '— Sahih Muslim, #270'
+                }, {
+                    text: 'It is reported from Hudhaifa that news reached him (the Holy Prophet) that a certain man carried tales. Upon this Hudhaifa remarked:I heard Allah\'s Messenger (ﷺ) saying: The tale-bearer shall not enter Paradise',
+                    ref: '— Sahih Muslim, #290'
+                }, {
+                    text: 'It is narrated on the authority of \'Abdullah b. Mas\'ud that the Apostle (ﷺ) was asked about evil prompting, to which he replied:It is pure faith',
+                    ref: '— Sahih Muslim, #342'
+                }, {
+                    text: "Abu Huraira (Allah be pleased with him) reported Allah's Messenger (ﷺ) as saying:An Umra is an expiation for the sins committed between it and the next, and Hajj which is accepted will receive no other reward than Paradise",
+                    ref: '— Sahih Muslim, #3289'
+                }, {
+                    text: 'Jabir reported that he had heard with his ears the Apostle (ﷺ) saying:Allah will bring out people from the Fire and admit them into Paradise',
+                    ref: '— Sahih Muslim, #470'
+                }, {
+                    text: 'Jabir b. \'Abdullah repotted:The Messenger of Allah (ﷺ) said: Verily people would be brought out from the Fire, and they would be burnt except the exterior (surfaces, fronts) of their faces; and they would enter Paradise',
+                    ref: '— Sahih Muslim, #472'
+                }, {
+                    text: 'Anas b. Malik reported:The Messenger of Allah (ﷺ) said: I would be the first among people to intercede in the Paradise and amongst the apostles I would have the largest following (on the Day of Resurrection)',
+                    ref: '— Sahih Muslim, #483'
+                }, {
+                    text: 'Anas b. Malik reported:The Messenger of Allah (ﷺ) said: Amongst the apostles I would have the largest following on the Day of Resurrec tion, and I would be the first to knock at the door of Paradise',
+                    ref: '— Sahih Muslim, #484'
+                }, {
+                    text: 'Abu Musa reported:I went to the Apostle (ﷺ) and found one end of the tooth-stick upon his tongue (i. e. he was rinsing his mouth)',
+                    ref: '— Sahih Muslim, #592'
+                }, {
+                    text: 'Abu Huraira reported:The Messenger of Allah (ﷺ) said: SayAmin when the Imam says Amin, for it anyone\'s utterance of Amin synchronises with that of the angels, he will be forgiven his past sins',
+                    ref: '— Sahih Muslim, #915'
+                }, {
+                    text: 'Abdullah b. Aufa reported:The Messenger of Allah (ﷺ) used to recite this supplication: O Allah! our Lord, unto Thee be praise that would fill the heavens and the earth and fill that which will please Thee besides them',
+                    ref: '— Sahih Muslim, #1068'
+                }, {
+                    text: 'Ibn Abbas reported from the Messenger of Allah (ﷺ) the words:" And that would fill that which will please Thee besides (them)!" and he did not mention the subsequent (portion of supplication)',
+                    ref: '— Sahih Muslim, #1073'
+                }, {
+                    text: 'Ali reported:My loved one (the Holy Prophet) forbade me that I should recite (the Qur\'an) in a state of bowing and prostration',
+                    ref: '— Sahih Muslim, #1079'
+                }, {
+                    text: 'Abu Huraira reported:The Messenger of Allah (ﷺ) used to say while prostrating himself: O Lord, forgive me all my sins, small and great, first and last, open and secret',
+                    ref: '— Sahih Muslim, #1084'
+                }, {
+                    text: 'Abdullah narrated it on the authority of his father Yahya:Knowledge cannot be acquired with sloth',
+                    ref: '— Sahih Muslim, #1390'
+                }, {
+                    text: 'Abu Bakr reported on the authority of his father that the Messenger of Allah (ﷺ) said:He who observed two prayers at two cool (hours) would enter Paradise',
+                    ref: '— Sahih Muslim, #1438'
+                }, {
+                    text: 'Ibn \'Abbas reported:Allah has prescribed the prayer through the word of your Prophet (ﷺ) as four rak\'ahs when resident, two when travelling, and one when danger is present',
+                    ref: '— Sahih Muslim, #1575'
+                }, {
+                    text: 'Mu\'adha asked \'A\'isha (Allah be pleased with her) how many rak\'ahs Allah\'s Messenger (ﷺ) prayed at the forenoon prayer. She replied:Four rak\'ahs, but sometimes more as he pleased',
+                    ref: '— Sahih Muslim, #1663'
+                }, {
+                    text: 'Mua\'ada \'Adawiyya reported \'A\'isha as saying:The Messenger of Allah (ﷺ) used to observe four rak\'ahs in the forenoon prayer and he sometimes observed more as Allah pleased',
+                    ref: '— Sahih Muslim, #1665'
+                }, {
+                    text: 'Abu Huraira reported Allah\'s Messenger (ﷺ) as saying:When any one of you gets up at night (for prayer) and his tongue falters in (the recitation) of the Qar\'an, and he does not know what he is reciting, he should go to sleep',
+                    ref: '— Sahih Muslim, #1836'
+                }, {
+                    text: 'A\'isha reported that the Messenger of Allah (ﷺ) heard a person reciting the Qur\'an at night. Upon this he said:May Allah show mercy to him; he has reminded me of such and such a verse which I had missed in such and such a surah',
+                    ref: '— Sahih Muslim, #1837'
+                }, {
+                    text: 'A\'isha reported that the Messenger of Allah (ﷺ) listened to the recitation of the Qur\'an by a man in the mosque. Thereupon he said:May Allah have mercy upon him; be reminded me of the verse which I had been made to forget',
+                    ref: '— Sahih Muslim, #1838'
+                }]
+            };
+
+            function pickFallback(randomPick) {
                 const list = FALLBACK[collection] || FALLBACK.bukhari;
-                if (fb.text === prevText && list.length > 1) fb = list.find(f => f.text !== prevText) || fb;
-                cacheAndPaint(fb.text, fb.ref);
-              }
+                if (randomPick) {
+                    return list[Math.floor(Math.random() * list.length)];
+                }
+                return list[dayNum % list.length];
+            }
+
+            // Fetch function (tries remote API, falls back to local list)
+            // accepts an option to force a random fallback (useful for manual refreshes when API fails)
+            function fetchHadith(options) {
+                options = options || {};
+                // Return the promise so callers can react to completion/failure
+                return fetch(`https://ummahapi.com/api/hadith/random?collection=${collection}`)
+                    .then(res => {
+                        if (!res.ok) throw new Error('Request failed: ' + res.status);
+                        return res.json();
+                    })
+                    .then(data => {
+                        // Defensive checks — different APIs may return different shapes
+                        const h = data && (data.data || data.hadith || data[0]) || null;
+                        if (h) {
+                            const text = h.hadith_english || h.text_en || h.text || h.body || (h[0] && h[0].text) || null;
+                            const num = h.number || h.hadith_number || (h[0] && h[0].number) || null;
+                            const bookName = collection === 'bukhari' ? 'Sahih al-Bukhari' : 'Sahih Muslim';
+                            const ref = `${num ? '— ' + bookName + ', #' + num : '— ' + bookName}`;
+
+                            if (text) {
+                                cacheAndPaint(text, ref);
+                                return {
+                                    ok: true
+                                };
+                            }
+                        }
+
+                        // If we reach here, API response didn't contain usable text — use fallback
+                        const fb = pickFallback(options.forceRandomFallback);
+                        cacheAndPaint(fb.text, fb.ref);
+                        return {
+                            ok: false,
+                            fallback: true
+                        };
+                    })
+                    .catch(err => {
+                        console.error('Hadith fetch error:', err);
+                        const fb = pickFallback(options.forceRandomFallback);
+                        cacheAndPaint(fb.text, fb.ref);
+                        return {
+                            ok: false,
+                            error: String(err)
+                        };
+                    });
+            }
+
+            // Initial fetch if cache wasn't used earlier
+            fetchHadith();
+
+            // If page loaded with ?refreshHadith=1 then clear cache and force a refresh, then remove param
+            try {
+                const _params = new URLSearchParams(window.location.search);
+                if (_params.get('refreshHadith') === '1') {
+                    // remember previous cached text (if any) so we can detect no-op refreshes
+                    const prevCached = JSON.parse(localStorage.getItem('dailyHadith') || 'null');
+                    const prevText = prevCached && prevCached.text ? String(prevCached.text) : null;
+
+                    try {
+                        localStorage.removeItem('dailyHadith');
+                    } catch (e) { /* ignore */ }
+
+                    fetchHadith({
+                        forceRandomFallback: true
+                    }).then(() => {
+                        // If the fetch resulted in the same text as before, pick a different random fallback to ensure a visible change
+                        try {
+                            const newCached = JSON.parse(localStorage.getItem('dailyHadith') || 'null');
+                            const newText = newCached && newCached.text ? String(newCached.text) : null;
+                            if (prevText && newText && prevText === newText) {
+                                let fb = pickFallback(true);
+                                // try to pick a different one when possible
+                                const list = FALLBACK[collection] || FALLBACK.bukhari;
+                                if (fb.text === prevText && list.length > 1) fb = list.find(f => f.text !== prevText) || fb;
+                                cacheAndPaint(fb.text, fb.ref);
+                            }
+                        } catch (e) { /* ignore */ }
+
+                        // remove query param without reloading
+                        _params.delete('refreshHadith');
+                        const newUrl = window.location.pathname + (_params.toString() ? ('?' + _params.toString()) : '');
+                        history.replaceState(null, '', newUrl);
+                    });
+                }
             } catch (e) { /* ignore */ }
 
-            // remove query param without reloading
-            _params.delete('refreshHadith');
-            const newUrl = window.location.pathname + (_params.toString() ? ('?' + _params.toString()) : '');
-            history.replaceState(null, '', newUrl);
-          });
-        }
-      } catch (e) { /* ignore */ }
+            // Wire up manual refresh: provide a global function and attach it to the button
+            window.__refreshHadith = function() {
+                const btn = document.getElementById('refreshHadithBtn');
+                try {
+                    localStorage.removeItem('dailyHadith');
+                } catch (e) { /* ignore */ }
+                // show a loading hint immediately and disable the button while fetching
+                paint("Loading today's hadith…", '');
+                if (btn) {
+                    btn.disabled = true;
+                    const originalText = btn.textContent;
+                    btn.textContent = 'Refreshing…';
 
-      // Wire up manual refresh: provide a global function and attach it to the button
-      window.__refreshHadith = function () {
-        const btn = document.getElementById('refreshHadithBtn');
-        try { localStorage.removeItem('dailyHadith'); } catch (e) { /* ignore */ }
-        // show a loading hint immediately and disable the button while fetching
-        paint("Loading today's hadith…", '');
-        if (btn) {
-          btn.disabled = true;
-          const originalText = btn.textContent;
-          btn.textContent = 'Refreshing…';
+                    return fetchHadith({
+                        forceRandomFallback: true
+                    }).then(result => {
+                        console.log('Hadith refresh result:', result);
+                        return result;
+                    }).catch(err => {
+                        console.error('Unexpected error during hadith refresh:', err);
+                        paint("Couldn't refresh hadith.", '');
+                        return {
+                            ok: false,
+                            error: String(err)
+                        };
+                    }).finally(() => {
+                        btn.disabled = false;
+                        btn.textContent = originalText;
+                    });
+                } else {
+                    // no button in DOM — still perform fetch
+                    return fetchHadith({
+                        forceRandomFallback: true
+                    });
+                }
+            };
 
-          return fetchHadith({ forceRandomFallback: true }).then(result => {
-            console.log('Hadith refresh result:', result);
-            return result;
-          }).catch(err => {
-            console.error('Unexpected error during hadith refresh:', err);
-            paint("Couldn't refresh hadith.", '');
-            return { ok: false, error: String(err) };
-          }).finally(() => {
-            btn.disabled = false;
-            btn.textContent = originalText;
-          });
-        } else {
-          // no button in DOM — still perform fetch
-          return fetchHadith({ forceRandomFallback: true });
-        }
-      };
+            const refreshBtn = document.getElementById('refreshHadithBtn');
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', () => {
+                    window.__refreshHadith();
+                });
+            } else {
+                console.warn('Refresh Hadith button not found in DOM');
+            }
+        })();
+        // ---------- Click-to-pause hadith marquee + toast notification ----------
+        (function() {
+            const bar = document.querySelector('.hadith-bar');
+            const track = document.getElementById('hadithTrack');
+            const toast = document.getElementById('toast');
+            let resumeTimer = null;
+            let toastTimer = null;
 
-      const refreshBtn = document.getElementById('refreshHadithBtn');
-      if (refreshBtn) {
-        refreshBtn.addEventListener('click', () => { window.__refreshHadith(); });
-      } else {
-        console.warn('Refresh Hadith button not found in DOM');
-      }
-    })();
-  </script>
+            function showToast(message) {
+                toast.textContent = message;
+                toast.classList.add('show');
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 5000);
+            }
 
+            bar.addEventListener('click', function(e) {
+                if (e.target.closest('#refreshHadithBtn')) return;
+
+                track.classList.add('js-paused');
+                showToast('Paused — resuming in 5s');
+
+                clearTimeout(resumeTimer);
+                resumeTimer = setTimeout(() => {
+                    track.classList.remove('js-paused');
+                }, 5000);
+            });
+
+        })();
+    </script>
 </body>
+
+</html>
 
 </html>
