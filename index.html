@@ -125,10 +125,6 @@
             animation: hadith-scroll 50s linear infinite;
         }
         
-        .hadith-track:hover {
-            animation-play-state: paused;
-        }
-        
         .hadith-item {
             display: flex;
             align-items: center;
@@ -388,6 +384,51 @@
             .prayer-row {
                 grid-template-columns: repeat(3, 1fr);
                 row-gap: 14px;
+            }
+        }
+        /* ---------- Mobile: hadith bar layout + readability ---------- */
+        
+        @media (max-width: 480px) {
+            .hadith-bar {
+                padding: 10px 0 44px;
+                /* extra bottom space for the button row */
+            }
+            .hadith-item {
+                font-size: 11px;
+                padding: 0 28px;
+                gap: 6px;
+            }
+            .hadith-item .tag {
+                font-size: 9px;
+            }
+            .hadith-item .ref {
+                font-size: 10px;
+            }
+            .hadith-track {
+                animation-duration: 26s;
+                /* faster loop so it doesn't feel sluggish on a narrow screen */
+            }
+            .refresh-hadith {
+                position: absolute;
+                top: auto;
+                bottom: 8px;
+                right: 50%;
+                transform: translateX(50%);
+                font-size: 10px;
+                padding: 5px 12px 5px 8px;
+            }
+            .toast {
+                top: auto;
+                bottom: 44px;
+                right: 50%;
+                transform: translateX(50%) translateY(6px);
+                font-size: 10.5px;
+                white-space: normal;
+                max-width: 260px;
+                text-align: center;
+            }
+            .toast.show {
+                transform: translateX(50%) translateY(0);
             }
         }
         /* ---------- Hero card ---------- */
@@ -1525,35 +1566,41 @@
             }
         })();
 
+        // ---------- Click-to-pause hadith marquee (toggle, no auto-resume) ----------
         (function() {
             const bar = document.querySelector('.hadith-bar');
             const track = document.getElementById('hadithTrack');
             const toast = document.getElementById('toast');
-            let resumeTimer = null;
             let toastTimer = null;
 
-            function showToast(message) {
+            function showToast(message, autoHide) {
                 toast.textContent = message;
                 toast.classList.add('show');
                 clearTimeout(toastTimer);
-                toastTimer = setTimeout(() => {
-                    toast.classList.remove('show');
-                }, 5000);
+                if (autoHide) {
+                    toastTimer = setTimeout(() => {
+                        toast.classList.remove('show');
+                    }, 5000);
+                }
             }
 
-            // Show a one-time hint automatically when the page loads
-            showToast('Tap the hadith to pause it');
+            function hideToast() {
+                clearTimeout(toastTimer);
+                toast.classList.remove('show');
+            }
+
+            // One-time hint on page load, still auto-hides after 5s
+            showToast('Tap the hadith to pause it', true);
 
             bar.addEventListener('click', function(e) {
                 if (e.target.closest('#refreshHadithBtn')) return;
 
-                track.classList.add('js-paused');
-                showToast('Paused — resuming in 5s');
-
-                clearTimeout(resumeTimer);
-                resumeTimer = setTimeout(() => {
-                    track.classList.remove('js-paused');
-                }, 5000);
+                const isPaused = track.classList.toggle('js-paused');
+                if (isPaused) {
+                    showToast('Paused — tap to resume', false);
+                } else {
+                    hideToast();
+                }
             });
         })();
     </script>
