@@ -990,11 +990,9 @@
         const refEl = document.getElementById('hadithRef');
         const textDupEl = document.getElementById('hadithTextDup');
         const refDupEl = document.getElementById('hadithRefDup');
-        // Hadith status display removed to avoid visual clutter on the marquee
 
         function todayKeyMY() {
-          // Malaysia's calendar date, so it flips at Malaysia midnight rather than the visitor's local midnight
-          return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kuala_Lumpur' }); // YYYY-MM-DD
+          return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kuala_Lumpur' });
         }
 
         function paint(text, ref) {
@@ -1008,154 +1006,183 @@
           paint(text, ref);
           try {
             localStorage.setItem('dailyHadith', JSON.stringify({ date: todayKeyMY(), text, ref }));
-          } catch (e) { /* localStorage unavailable — no big deal, just refetches next load */ }
+          } catch (e) { }
         }
 
-        // Try today's cached hadith first, so every page load on the same day shows the same one
         const _forcedRefreshParam = (function () { try { return new URLSearchParams(window.location.search).get('refreshHadith') === '1'; } catch (e) { return false; } })();
         try {
           const cached = JSON.parse(localStorage.getItem('dailyHadith') || 'null');
-          // If a manual refresh was requested via URL, clear the cached entry
           if (_forcedRefreshParam && cached) {
-            try { localStorage.removeItem('dailyHadith'); } catch (e) { /* ignore */ }
+            try { localStorage.removeItem('dailyHadith'); } catch (e) { }
           }
-          // Validate cache: ensure it's for today and doesn't contain placeholder or error text
           if (!_forcedRefreshParam && cached && cached.date === todayKeyMY()) {
-            const badPlaceholder = /unavailable|couldn't load|hadith text unavailable/i;
-            const refEmptyHash = /#\s*$|,#\s*$/; // trailing # from older responses
-            if (cached.text && !badPlaceholder.test(cached.text) && !(cached.ref && refEmptyHash.test(cached.ref))) {
-              paint(cached.text, cached.ref);
-              return;
-            } else {
-              // Remove clearly-bad cached entry so we don't re-use it
-              try { localStorage.removeItem('dailyHadith'); } catch (e) { /* ignore */ }
-            }
-          } else {
-            // no valid cache or refresh requested
+            paint(cached.text, cached.ref);
+            return;
           }
-        } catch (e) { /* cache check failed */ }
+        } catch (e) { }
 
-        // Deterministic per-day pick between the two Sahih collections
         const dayNum = Math.floor(Date.now() / 86400000);
         const collection = (dayNum % 2 === 0) ? 'bukhari' : 'muslim';
 
-        // Local fallback hadiths (used if the external API is unreachable or returns unexpected data).
         const FALLBACK = {
           bukhari: [
-            { text: "Actions are (judged) by motives, so each man will have what he intended.", ref: '— Sahih al-Bukhari' },
-            { text: "The best among you are those who have the best manners and character.", ref: '— Sahih al-Bukhari' }
+            { text: 'Narrated Abu Mas\'ud: The Prophet (ﷺ) said, "If a man spends on his family (with the intention of having a reward from Allah) sincerely for Allah\'s sake then it is a (kind of) alms-giving in reward for him', ref: '— Sahih al-Bukhari, #55' },
+            { text: 'Narrated Anas: The Prophet (ﷺ) said, "None of you will have faith till he wishes for his (Muslim) brother what he likes for himself', ref: '— Sahih al-Bukhari, #13' },
+            { text: 'Narrated Abu Huraira: "Allah\'s Messenger (ﷺ) said, "By Him in Whose Hands my life is, none of you will have faith till he loves me more than his father and his children', ref: '— Sahih al-Bukhari, #14' },
+            { text: 'Narrated Anas: The Prophet (ﷺ) said, "Love for the Ansar is a sign of faith and hatred for the Ansar is a sign of hypocrisy', ref: '— Sahih al-Bukhari, #17' },
+            { text: 'Narrated \'Abdullah (bin \'Umar): Once Allah\'s Messenger (ﷺ) passed by an Ansari (man) who was admonishing his brother regarding Haya\'. On that Allah\'s Messenger (ﷺ) said, "Leave him as Haya\' is a part of faith." (See Hadith)', ref: '— Sahih al-Bukhari, #24' },
+            { text: 'Narrated Abu Huraira:I have memorized two kinds of knowledge from Allah\'s Messenger (ﷺ) . I have propagated one of them to you and if I propagated the second, then my pharynx (throat) would be cut (i.e. killed)', ref: '— Sahih al-Bukhari, #120' },
+            { text: 'Narrated Anas:The Prophet (ﷺ) said, "A Muslim whose three children die before the age of puberty will be granted Paradise by Allah due to his mercy for them', ref: '— Sahih al-Bukhari, #1248' },
+            { text: 'Narrated Abu Burda:That his father said, "When `Umar was stabbed, Suhaib started crying: O my brother! `Umar said, \'Don\'t you know that the Prophet (ﷺ) said: The deceased is tortured for the weeping of the living\'?', ref: '— Sahih al-Bukhari, #1290' },
+            { text: 'Narrated Anas bin Malik:Allah\'s Messenger (ﷺ) said, "Any Muslim whose three children died before the age of puberty will be granted Paradise by Allah because of His mercy to them', ref: '— Sahih al-Bukhari, #1381' },
+            { text: 'Narrated Abu Huraira:The Prophet (ﷺ) said, "The poor person is not the one who asks a morsel or two (of meals) from the others, but the poor is the one who has nothing and is ashamed to beg from others', ref: '— Sahih al-Bukhari, #1476' },
+            { text: 'Narrated \'Aishah:The Prophet (ﷺ) sent my brother, \'Abdur Rahman with me to Tan\'im for the \'Umra, and he made me ride on the packsaddle (of a camel). \'Umar said, "Be ready to travel for Hajj as it (Hajj) is one of the two kind of Jihad', ref: '— Sahih al-Bukhari, #1516' },
+            { text: 'Narrated Abu Huraira:Allah\'s Messenger (ﷺ) said, "(The performance of) `Umra is an expiation for the sins committed (between it and the previous one). And the reward of Hajj Mabrur (the one accepted by Allah) is nothing except Paradise', ref: '— Sahih al-Bukhari, #1773' },
+            { text: 'Narrated Abu Huraira:The Prophet (ﷺ) said, "If a woman gives something (i.e. in charity) from her husband\'s earnings without his permission, she will get half his reward', ref: '— Sahih al-Bukhari, #2066' },
+            { text: 'Narrated Anas bin Malik:Allah\'s Messenger (ﷺ) said, "Help your brother, whether he is an oppressor or he is an oppressed one', ref: '— Sahih al-Bukhari, #2443' },
+            { text: 'Narrated Abu Huraira:Allah\'s Messenger (ﷺ) said, "When Allah completed the creation, He wrote in His Book which is with Him on His Throne, "My Mercy overpowers My Anger', ref: '— Sahih al-Bukhari, #3194' },
+            { text: 'Narrated `Imran bin Husain:The Prophet (ﷺ) said, "I looked at Paradise and found poor people forming the majority of its inhabitants; and I looked at Hell and saw that the majority of its inhabitants were women', ref: '— Sahih al-Bukhari, #3241' },
+            { text: 'Narrated Usama bin Zaid:That the Prophet (ﷺ) used to take him and Al-Hasan, and used to say, "O Allah! I love them, so please love them," or said something similar', ref: '— Sahih al-Bukhari, #3747' },
+            { text: 'Narrated Al-Bara:I saw the Prophet (ﷺ) carrying Al-Hasan on his shoulder an saying, "O Allah! I love him, so please love him', ref: '— Sahih al-Bukhari, #3749' },
+            { text: 'Narrated Ibn `Abbas:Once the Prophet (ﷺ) embraced me (pressed me to his chest) and said, "O Allah, teach him wisdom (i.e. the understanding of the knowledge of Qur\'an)', ref: '— Sahih al-Bukhari, #3756' },
+            { text: 'Narrated Abu Huraira:that Allah\'s Messenger (ﷺ) informed them (i.e. his companions) of the death of Negus, the king of Ethiopia, on the very day on which the latter died, and said, "Ask Allah\'s Forgiveness for your brother', ref: '— Sahih al-Bukhari, #3880' },
+            { text: 'Narrated Abu Musa:That the Prophet (ﷺ) said, "The good is what Allah gave us later on (after Uhud), and the reward of truthfulness is what Allah gave us after the day (of the battle) of Badr', ref: '— Sahih al-Bukhari, #3987' },
+            { text: 'Narrated Abu Huraira:The Prophet (ﷺ) said, "The people of Yemen have come to you, and they are more soft hearted and gentle hearted people. The capacity for understanding religion is Yemenite and Wisdom is Yemenite', ref: '— Sahih al-Bukhari, #4390' },
+            { text: 'Narrated Ikrima:Ibn `Abbas said ( regarding the verse), "And when the relatives and the orphans and the poor are present at the time of division, "this verse and its order is valid and not abrogated', ref: '— Sahih al-Bukhari, #4576' },
+            { text: 'Narrated `Imran:The Prophet (ﷺ) said, "I looked at Paradise and saw that the majority of its residents were the poor; and I looked at the (Hell) Fire and saw that the majority of its residents were women', ref: '— Sahih al-Bukhari, #5198' },
+            { text: 'Narrated Sahl:Allah\'s Messenger (ﷺ) said, "I and the one who looks after an orphan will be like this in Paradise," showing his middle and index fingers and separating them', ref: '— Sahih al-Bukhari, #5304' },
+            { text: 'Narrated Abu Huraira:The Prophet (ﷺ) said, "If the wife gives of her husband\'s property (something in charity) without his permission, he will get half the reward', ref: '— Sahih al-Bukhari, #5360' },
+            { text: 'Narrated `Aisha:I heard the Prophet (ﷺ) , who was resting against me, saying, "O Allah! Excuse me and bestow Your Mercy on me and let me join with the highest companions (in Paradise)." See Qur\'an', ref: '— Sahih al-Bukhari, #5674' },
+            { text: 'Narrated Abu Huraira: Allah\'s Messenger (ﷺ) said: The cattle (sheep, cows, camels, etc.) suffering from a disease should not be mixed up with healthy cattle, (or said: "Do not put a patient with a healthy person ). " (as a precaution)', ref: '— Sahih al-Bukhari, #5771' },
+            { text: 'Narrated Qatada:I asked Anas, "What kind of clothes was most beloved to the Prophet?" He replied, "The Hibra (a kind of Yemenese cloth)', ref: '— Sahih al-Bukhari, #5812' },
+            { text: 'Narrated Anas bin Malik:The most beloved garment to the Prophet (ﷺ) to wear was the Hibra (a kind of Yemenese cloth)', ref: '— Sahih al-Bukhari, #5813' },
+            { text: 'Narrated Usama bin Zaid:Allah\'s Messenger (ﷺ) used to put me on (one of) his thighs and put Al-Hasan bin `Ali on his other thigh, and then embrace us and say, "O Allah! Please be Merciful to them, as I am merciful to them', ref: '— Sahih al-Bukhari, #6003' },
+            { text: 'Narrated Sahl bin Sa`d:The Prophet (ﷺ) said, "I and the person who looks after an orphan and provides for him, will be in Paradise like this," putting his index and middle fingers together', ref: '— Sahih al-Bukhari, #6005' },
+            { text: 'Narrated Anas bin Malik:The Prophet (ﷺ) said, "If any Muslim plants any plant and a human being or an animal eats of it, he will be rewarded as if he had given that much in charity', ref: '— Sahih al-Bukhari, #6012' },
+            { text: 'Narrated `Aisha:The Prophet (ﷺ) said "Gabriel continued to recommend me about treating the neighbors Kindly and politely so much so that I thought he would order me to make them as my heirs', ref: '— Sahih al-Bukhari, #6014' },
+            { text: 'Narrates Ibn `Umar:Allah\'s Apostle said, Gabriel kept on recommending me about treating the neighbors in a kind and polite manner, so much so that I thought that he would order (me) to make them (my) heirs', ref: '— Sahih al-Bukhari, #6015' },
+            { text: 'Narrated Abu Huraira:Allah\'s Messenger (ﷺ) said, "The strong is not the one who overcomes the people by his strength, but the strong is the one who controls himself while in anger', ref: '— Sahih al-Bukhari, #6114' },
+            { text: 'Narrated Anas bin Malik:The Prophet (ﷺ) used to mix with us to the extent that he would say to a younger brother of mine, \'O Aba `Umair! What did the Nughair (a kind of bird) do?', ref: '— Sahih al-Bukhari, #6129' },
+            { text: 'Narrated Anas:The Prophet (ﷺ) said, "O Allah! There is no life worth living except the life of the Hereafter, so (please) make righteous the Ansar and the Emigrants', ref: '— Sahih al-Bukhari, #6413' },
+            { text: 'Narrated `Imran bin Husain:The Prophet (ﷺ) said, "I looked into Paradise and found that the majority of its dwellers were the poor people, and I looked into the (Hell) Fire and found that the majority of its dwellers were women', ref: '— Sahih al-Bukhari, #6449' },
+            { text: 'Narrated Abu Huraira:Allah\'s Messenger (ﷺ) said, "The (Hell) Fire is surrounded by all kinds of desires and passions, while Paradise is surrounded by all kinds of disliked undesirable things', ref: '— Sahih al-Bukhari, #6487' },
+            { text: 'Narrated `Imran:The Prophet (ﷺ) said, "I looked into paradise and saw that the majority of its people were the poor, and I looked into the Fire and found that the majority of its people were women', ref: '— Sahih al-Bukhari, #6546' },
+            { text: 'Narrated Abu Huraira:I heard the truthful and trusted by Allah (i.e., the Prophet (ﷺ) ) saying, "The destruction of my followers will be through the hands of young men from Quraish', ref: '— Sahih al-Bukhari, #7058' },
+            { text: 'Narrated Hudhaifa:The Prophet (ﷺ) said to the people of Najran, "I will send to you an honest person who is really trustworthy." The Companion, of the Prophet (ﷺ) each desired to be that person, but the Prophet (ﷺ) sent Abu \'Ubaida', ref: '— Sahih al-Bukhari, #7254' },
+            { text: 'Narrated Jarir bin `Abdullah:Allah\'s Messenger (ﷺ) said, "Allah will not be merciful to those who are not merciful to mankind', ref: '— Sahih al-Bukhari, #7376' },
+            { text: 'Narrated Abu Huraira:The Prophet (ﷺ) said, "When Allah created the Creation, He wrote in His Book--and He wrote (that) about Himself, and it is placed with Him on the Throne--\'Verily My Mercy overcomes My Anger', ref: '— Sahih al-Bukhari, #7404' },
+            { text: 'Narrated Abu Huraira:The Prophet (ﷺ) said, "When Allah had finished His creation, He wrote over his Throne: \'My Mercy preceded My Anger', ref: '— Sahih al-Bukhari, #7422' },
+            { text: 'Narrated Abu Huraira:Allah\'s Messenger (ﷺ) said, "When Allah created the creations, He wrote with Him on His Throne: \'My Mercy has preceded My Anger', ref: '— Sahih al-Bukhari, #7453' },
+            { text: 'Narrated Abu Huraira:I heard Allah\'s Messenger (ﷺ) saying, "Before Allah created the creations, He wrote a Book (wherein He has written): My Mercy has preceded my Anger." and that (Book) is written with Him over the Throne', ref: '— Sahih al-Bukhari, #7553' },
+            { text: 'Narrated \'Abdullah bin \'Amr: The Prophet (ﷺ) said, "A Muslim is the one who avoids harming Muslims with his tongue and hands. And a Muhajir (emigrant) is the one who gives up (abandons) all what Allah has forbidden', ref: '— Sahih al-Bukhari, #10' },
+            { text: 'Narrated Abu Musa: Some people asked Allah\'s Messenger (ﷺ), "Whose Islam is the best? i.e. (Who is a very good Muslim)?" He replied, "One who avoids harming the Muslims with his tongue and hands', ref: '— Sahih al-Bukhari, #11' }
           ],
           muslim: [
-            { text: "None of you truly believes until he loves for his brother what he loves for himself.", ref: '— Sahih Muslim' },
-            { text: "The strong man is not the one who can overpower others; the strong one is the one who controls himself when angry.", ref: '— Sahih Muslim' }
+            { text: 'Abu Huraira reported Allah\'s Messenger (ﷺ) as saying:Charity does not decrease wealth, no one forgives another except that Allah increases his honor, and no one humbles himself for the sake of Allah except that Allah raises his status', ref: '— Sahih Muslim, #6592' },
+            { text: 'Abdullah b. \'Umar (Allah be pleased with them) said:I heard Allah\'s Messenger (ﷺ) as saying: He who patiently endured the hardships and rigours of (this city, i. e. Medina), I would be his witness and intercessor on the Day of Resurrection', ref: '— Sahih Muslim, #3346' },
+            { text: 'Abu Huraira (Allah be pleased with him) used to say:The worst kind of food is the wedding feast to which the rich are invited and the poor are ignored. He who does not come to the feast, he in fact disobeys Allah and His Messenger (ﷺ)', ref: '— Sahih Muslim, #3521' },
+            { text: 'Ibn \'Umar (Allah be pleased with them) reported:Allah\'s Messenger (ﷺ) asked a person from the Anger and his wife to invoke curse (upon one another in order to testify to their truthfulness), and then effected separation between them', ref: '— Sahih Muslim, #3753' },
+            { text: 'It is narrated on the authority of Abu Huraira that the Messenger of Allah (may peace and blessing be upon him) observed:He will not enter Paradise whose neighbour is not secure from his wrongful conduct', ref: '— Sahih Muslim, #172' },
+            { text: 'It is narrated on the authority of Anas that the Apostle (may peace and blessings be upon him) said:The love of the Ansar is the sign of faith and hatred against them is the sign of dissemblance', ref: '— Sahih Muslim, #236' },
+            { text: 'Ibn \'Abbas reported:Allah has prescribed the prayer by the tongue of your Apostle (ﷺ) as two rak\'ahs for the traveller, four for the resident, and one in danger', ref: '— Sahih Muslim, #1576' },
+            { text: 'In the hadith transmitted by Yahya b. Sa\'id on the authority of Qatada (the words are):(The believing servant) finds relief from the troubles of the world and its hardships and (gets into) the Mercy of Allah', ref: '— Sahih Muslim, #2203' },
+            { text: 'Ibn Abbas (Allah be pleased with them) reported:A woman lifted up her child and said: Messenger of Allah, would the child be credited with having performed the Hajj? Thereupon he said: Yes, and there would be a reward for you', ref: '— Sahih Muslim, #3254' },
+            { text: 'AbduUah b. Zaid al-Mazini (Allah be pleased with him) reported Allah\'s Messenger (ﷺ) as saying:That which is between my house" and my pulpit is a garden from the gardens of Paradise', ref: '— Sahih Muslim, #3368' },
+            { text: 'Anas b. Malik (Allah be pleased with him) reported Allah\'s Messenger (way peace be upon him) as saying:Uhud is a mountain which loves us and which we love', ref: '— Sahih Muslim, #3372' },
+            { text: 'In the hadith transmitted on the authority of Shu\'ba it was stated that Ibn Umar (Allah be pleased with them) was asked what good condition implied. He said:When (the danger of) blight is no more', ref: '— Sahih Muslim, #3870' },
+            { text: 'Ibn Abbas (Allah be pleased with them) reported Allah\'s Apostle (ﷺ) as saying:He who has land, it is better for him that he should let it out to his brother', ref: '— Sahih Muslim, #3961' },
+            { text: 'Nu\'man b. Bashir (Allah be pleased with them) reported that Allah\'s Messenger (ﷺ) said to his father:Call me not as witness to an injustice', ref: '— Sahih Muslim, #4184' },
+            { text: 'Abu Huraira reported Allah\'s Messenger (ﷺ) as saying:Let him be humbled, let him be humbled. It was said: Allah\'s Messenger, who is he? He said. He who finds his parents in old age, either one or both of them, and does not enter Paradise', ref: '— Sahih Muslim, #6511' },
+            { text: 'Abdullah b. Umar reported Allah\'s Apostle (ﷺ) as saying:The finest act of goodness is that a person should treat kindly the loved ones of his father', ref: '— Sahih Muslim, #6514' },
+            { text: 'Thauban reported Allah\'s Apostle (ﷺ) as saying:Verily, when a Muslim visits his brother in Islam he is supposed to remain in the fruit garden of Paradise until he returns', ref: '— Sahih Muslim, #6553' },
+            { text: 'A\'isha reported Allah\'s Messenger (ﷺ) as saying:Gabriel impressed upon me (kind treatment) towards the neighbour (so much) that I thought as if he would confer upon him the (right) of inheritance', ref: '— Sahih Muslim, #6685' },
+            { text: 'Ibn Umar reported Allah\'s Messenger (ﷺ) as saying:Gabriel impressed upon me (the kind treatment) towards the neighbour (so much) that I thought as if he would soon confer upon him the (right) of inheritance', ref: '— Sahih Muslim, #6687' },
+            { text: 'Ibn Abbas reported that Allah\'s Messenger (ﷺ) said:I had a chance to look into the Paradise and I found that majority of the people was poor and I looked into the Fire and there I found the majority constituted by women', ref: '— Sahih Muslim, #6938' },
+            { text: 'Anas b. Malik reported:The Paradise is surrounded by hardships and the Hell-Fire is surrounded by temptations', ref: '— Sahih Muslim, #7130' },
+            { text: 'It is narrated on the authority of \'Uthman that the Messenger of Allah (ﷺ) said. He who died knowing (fully well) that there is no god but Allah entered Paradise', ref: '— Sahih Muslim, #136' },
+            { text: 'It is narrated on the authority of Jabir that he heard the (Holy Prophet) say:A Muslim is he from whose hand and tongue the Muslims are safe', ref: '— Sahih Muslim, #162' },
+            { text: 'It is narrated on the authority of Abu Musa Ash\'ari:I asked the Messenger of Allah which (attribute) of Islam is more excellent. Upon this he remarked: One in which the Muslims are safe, protected from the tongue and hand of (other Muslims)', ref: '— Sahih Muslim, #163' },
+            { text: 'It is reported on the authority of Jabir b. Abdullah that the Messenger of Allah (may peace and, blessings be upon him) observed:The callousness of heart and sternness is in the East and faith is among the people of the Hijaz', ref: '— Sahih Muslim, #193' },
+            { text: 'It is narrated on the authority of Tamim ad-Dari that the Prophet (ﷺ) said:"The Religion is sincerity." We said, "To whom?" He said "To Allah, to His Book, To His Messenger, and to the leaders of the Muslims and their masses', ref: '— Sahih Muslim, #196' },
+            { text: 'It is reported on the authority of \'Abdullah that the Messenger of Allah observed:The best of\' the deeds or deed is the (observance of) prayer at its proper time and kindness to the parents', ref: '— Sahih Muslim, #256' },
+            { text: 'It is narrated on the authority of \'Abdullah that the Messenger of Allah (ﷺ) observed:He who has in his heart the weight of a mustard seed of pride shall not enter Paradise', ref: '— Sahih Muslim, #267' },
+            { text: 'It is narrated on the authority of Jabir b. Abdullah:I heard the Messenger of Allah (ﷺ) saying: He who met Allah without associating anything with Allah entered Paradise and he who met Him associating (anything) with Him entered Fire', ref: '— Sahih Muslim, #270' },
+            { text: 'It is reported from Hudhaifa that news reached him (the Holy Prophet) that a certain man carried tales. Upon this Hudhaifa remarked:I heard Allah\'s Messenger (ﷺ) saying: The tale-bearer shall not enter Paradise', ref: '— Sahih Muslim, #290' },
+            { text: 'It is narrated on the authority of \'Abdullah b. Mas\'ud that the Apostle (ﷺ) was asked about evil prompting, to which he replied:It is pure faith', ref: '— Sahih Muslim, #342' },
+            { text: "Abu Huraira (Allah be pleased with him) reported Allah's Messenger (\u0631) as saying:An Umra is an expiation for the sins committed between it and the next, and Hajj which is accepted will receive no other reward than Paradise", ref: '— Sahih Muslim, #3289' },
+            { text: 'Jabir reported that he had heard with his ears the Apostle (ﷺ) saying:Allah will bring out people from the Fire and admit them into Paradise', ref: '— Sahih Muslim, #470' },
+            { text: 'Jabir b. \'Abdullah repotted:The Messenger of Allah (ﷺ) said: Verily people would be brought out from the Fire, and they would be burnt except the exterior (surfaces, fronts) of their faces; and they would enter Paradise', ref: '— Sahih Muslim, #472' },
+            { text: 'Anas b. Malik reported:The Messenger of Allah (ﷺ) said: I would be the first among people to intercede in the Paradise and amongst the apostles I would have the largest following (on the Day of Resurrection)', ref: '— Sahih Muslim, #483' },
+            { text: 'Anas b. Malik reported:The Messenger of Allah (ﷺ) said: Amongst the apostles I would have the largest following on the Day of Resurrec tion, and I would be the first to knock at the door of Paradise', ref: '— Sahih Muslim, #484' },
+            { text: 'Abu Musa reported:I went to the Apostle (ﷺ) and found one end of the tooth-stick upon his tongue (i. e. he was rinsing his mouth)', ref: '— Sahih Muslim, #592' },
+            { text: 'Abu Huraira reported:The Messenger of Allah (ﷺ) said: SayAmin when the Imam says Amin, for it anyone\'s utterance of Amin synchronises with that of the angels, he will be forgiven his past sins', ref: '— Sahih Muslim, #915' },
+            { text: 'Abdullah b. Aufa reported:The Messenger of Allah (ﷺ) used to recite this supplication: O Allah! our Lord, unto Thee be praise that would fill the heavens and the earth and fill that which will please Thee besides them', ref: '— Sahih Muslim, #1068' },
+            { text: 'Ibn Abbas reported from the Messenger of Allah (ﷺ) the words:" And that would fill that which will please Thee besides (them)!" and he did not mention the subsequent (portion of supplication)', ref: '— Sahih Muslim, #1073' },
+            { text: 'Ali reported:My loved one (the Holy Prophet) forbade me that I should recite (the Qur\'an) in a state of bowing and prostration', ref: '— Sahih Muslim, #1079' },
+            { text: 'Abu Huraira reported:The Messenger of Allah (ﷺ) used to say while prostrating himself: O Lord, forgive me all my sins, small and great, first and last, open and secret', ref: '— Sahih Muslim, #1084' },
+            { text: 'Abdullah narrated it on the authority of his father Yahya:Knowledge cannot be acquired with sloth', ref: '— Sahih Muslim, #1390' },
+            { text: 'Abu Bakr reported on the authority of his father that the Messenger of Allah (ﷺ) said:He who observed two prayers at two cool (hours) would enter Paradise', ref: '— Sahih Muslim, #1438' },
+            { text: 'Ibn \'Abbas reported:Allah has prescribed the prayer through the word of your Prophet (ﷺ) as four rak\'ahs when resident, two when travelling, and one when danger is present', ref: '— Sahih Muslim, #1575' },
+            { text: 'Mu\'adha asked \'A\'isha (Allah be pleased with her) how many rak\'ahs Allah\'s Messenger (ﷺ) prayed at the forenoon prayer. She replied:Four rak\'ahs, but sometimes more as he pleased', ref: '— Sahih Muslim, #1663' },
+            { text: 'Mua\'ada \'Adawiyya reported \'A\'isha as saying:The Messenger of Allah (ﷺ) used to observe four rak\'ahs in the forenoon prayer and he sometimes observed more as Allah pleased', ref: '— Sahih Muslim, #1665' },
+            { text: 'Abu Huraira reported Allah\'s Messenger (ﷺ) as saying:When any one of you gets up at night (for prayer) and his tongue falters in (the recitation) of the Qar\'an, and he does not know what he is reciting, he should go to sleep', ref: '— Sahih Muslim, #1836' },
+            { text: 'A\'isha reported that the Messenger of Allah (ﷺ) heard a person reciting the Qur\'an at night. Upon this he said:May Allah show mercy to him; he has reminded me of such and such a verse which I had missed in such and such a surah', ref: '— Sahih Muslim, #1837' },
+            { text: 'A\'isha reported that the Messenger of Allah (ﷺ) listened to the recitation of the Qur\'an by a man in the mosque. Thereupon he said:May Allah have mercy upon him; be reminded me of the verse which I had been made to forget', ref: '— Sahih Muslim, #1838' }
           ]
         };
+
+        let lastShownText = null;
 
         function pickFallback(randomPick) {
           const list = FALLBACK[collection] || FALLBACK.bukhari;
           if (randomPick) {
-            return list[Math.floor(Math.random() * list.length)];
+            if (list.length <= 1) return list[0];
+            let pick;
+            do {
+              pick = list[Math.floor(Math.random() * list.length)];
+            } while (pick.text === lastShownText);
+            return pick;
           }
           return list[dayNum % list.length];
         }
 
-        // Fetch function (tries remote API, falls back to local list)
-        // accepts an option to force a random fallback (useful for manual refreshes when API fails)
         function fetchHadith(options) {
           options = options || {};
-          // Return the promise so callers can react to completion/failure
-          return fetch(`https://ummahapi.com/api/hadith/random?collection=${collection}`)
-            .then(res => {
-              if (!res.ok) throw new Error('Request failed: ' + res.status);
-              return res.json();
-            })
-            .then(data => {
-              // Defensive checks — different APIs may return different shapes
-              const h = data && (data.data || data.hadith || data[0]) || null;
-              if (h) {
-                const text = h.hadith_english || h.text_en || h.text || h.body || (h[0] && h[0].text) || null;
-                const num = h.number || h.hadith_number || (h[0] && h[0].number) || null;
-                const bookName = collection === 'bukhari' ? 'Sahih al-Bukhari' : 'Sahih Muslim';
-                const ref = `${num ? '— ' + bookName + ', #' + num : '— ' + bookName}`;
-
-                if (text) {
-                  cacheAndPaint(text, ref);
-                  return { ok: true };
-                }
-              }
-
-              // If we reach here, API response didn't contain usable text — use fallback
-              const fb = pickFallback(options.forceRandomFallback);
-              cacheAndPaint(fb.text, fb.ref);
-              return { ok: false, fallback: true };
-            })
-            .catch(err => {
-              console.error('Hadith fetch error:', err);
-              const fb = pickFallback(options.forceRandomFallback);
-              cacheAndPaint(fb.text, fb.ref);
-              return { ok: false, error: String(err) };
-            });
+          return new Promise(resolve => {
+            const fb = pickFallback(options.forceRandomFallback);
+            lastShownText = fb.text;
+            cacheAndPaint(fb.text, fb.ref);
+            resolve({ ok: true, source: 'local' });
+          });
         }
 
-        // Initial fetch if cache wasn't used earlier
         fetchHadith();
 
-        // If page loaded with ?refreshHadith=1 then clear cache and force a refresh, then remove param
         try {
           const _params = new URLSearchParams(window.location.search);
           if (_params.get('refreshHadith') === '1') {
-            // remember previous cached text (if any) so we can detect no-op refreshes
-            const prevCached = JSON.parse(localStorage.getItem('dailyHadith') || 'null');
-            const prevText = prevCached && prevCached.text ? String(prevCached.text) : null;
-
-            try { localStorage.removeItem('dailyHadith'); } catch (e) { /* ignore */ }
-
+            try { localStorage.removeItem('dailyHadith'); } catch (e) { }
             fetchHadith({ forceRandomFallback: true }).then(() => {
-              // If the fetch resulted in the same text as before, pick a different random fallback to ensure a visible change
-              try {
-                const newCached = JSON.parse(localStorage.getItem('dailyHadith') || 'null');
-                const newText = newCached && newCached.text ? String(newCached.text) : null;
-                if (prevText && newText && prevText === newText) {
-                  let fb = pickFallback(true);
-                  // try to pick a different one when possible
-                  const list = FALLBACK[collection] || FALLBACK.bukhari;
-                  if (fb.text === prevText && list.length > 1) fb = list.find(f => f.text !== prevText) || fb;
-                  cacheAndPaint(fb.text, fb.ref);
-                }
-              } catch (e) { /* ignore */ }
-
-              // remove query param without reloading
               _params.delete('refreshHadith');
               const newUrl = window.location.pathname + (_params.toString() ? ('?' + _params.toString()) : '');
               history.replaceState(null, '', newUrl);
             });
           }
-        } catch (e) { /* ignore */ }
+        } catch (e) { }
 
-        // Wire up manual refresh: provide a global function and attach it to the button
         window.__refreshHadith = function () {
           const btn = document.getElementById('refreshHadithBtn');
-          try { localStorage.removeItem('dailyHadith'); } catch (e) { /* ignore */ }
-          // show a loading hint immediately and disable the button while fetching
+          try { localStorage.removeItem('dailyHadith'); } catch (e) { }
           paint("Loading today's hadith…", '');
           if (btn) {
             btn.disabled = true;
             const originalText = btn.textContent;
             btn.textContent = 'Refreshing…';
-
-            return fetchHadith({ forceRandomFallback: true }).then(result => {
-              console.log('Hadith refresh result:', result);
-              return result;
-            }).catch(err => {
-              console.error('Unexpected error during hadith refresh:', err);
-              paint("Couldn't refresh hadith.", '');
-              return { ok: false, error: String(err) };
-            }).finally(() => {
+            return fetchHadith({ forceRandomFallback: true }).finally(() => {
               btn.disabled = false;
               btn.textContent = originalText;
             });
           } else {
-            // no button in DOM — still perform fetch
             return fetchHadith({ forceRandomFallback: true });
           }
         };
@@ -1163,10 +1190,79 @@
         const refreshBtn = document.getElementById('refreshHadithBtn');
         if (refreshBtn) {
           refreshBtn.addEventListener('click', () => { window.__refreshHadith(); });
-        } else {
-          console.warn('Refresh Hadith button not found in DOM');
         }
       })();
+
+      // Initial fetch if cache wasn't used earlier
+      fetchHadith();
+
+      // If page loaded with ?refreshHadith=1 then clear cache and force a refresh, then remove param
+      try {
+        const _params = new URLSearchParams(window.location.search);
+        if (_params.get('refreshHadith') === '1') {
+          // remember previous cached text (if any) so we can detect no-op refreshes
+          const prevCached = JSON.parse(localStorage.getItem('dailyHadith') || 'null');
+          const prevText = prevCached && prevCached.text ? String(prevCached.text) : null;
+
+          try { localStorage.removeItem('dailyHadith'); } catch (e) { /* ignore */ }
+
+          fetchHadith({ forceRandomFallback: true }).then(() => {
+            // If the fetch resulted in the same text as before, pick a different random fallback to ensure a visible change
+            try {
+              const newCached = JSON.parse(localStorage.getItem('dailyHadith') || 'null');
+              const newText = newCached && newCached.text ? String(newCached.text) : null;
+              if (prevText && newText && prevText === newText) {
+                let fb = pickFallback(true);
+                // try to pick a different one when possible
+                const list = FALLBACK[collection] || FALLBACK.bukhari;
+                if (fb.text === prevText && list.length > 1) fb = list.find(f => f.text !== prevText) || fb;
+                cacheAndPaint(fb.text, fb.ref);
+              }
+            } catch (e) { /* ignore */ }
+
+            // remove query param without reloading
+            _params.delete('refreshHadith');
+            const newUrl = window.location.pathname + (_params.toString() ? ('?' + _params.toString()) : '');
+            history.replaceState(null, '', newUrl);
+          });
+        }
+      } catch (e) { /* ignore */ }
+
+      // Wire up manual refresh: provide a global function and attach it to the button
+      window.__refreshHadith = function () {
+        const btn = document.getElementById('refreshHadithBtn');
+        try { localStorage.removeItem('dailyHadith'); } catch (e) { /* ignore */ }
+        // show a loading hint immediately and disable the button while fetching
+        paint("Loading today's hadith…", '');
+        if (btn) {
+          btn.disabled = true;
+          const originalText = btn.textContent;
+          btn.textContent = 'Refreshing…';
+
+          return fetchHadith({ forceRandomFallback: true }).then(result => {
+            console.log('Hadith refresh result:', result);
+            return result;
+          }).catch(err => {
+            console.error('Unexpected error during hadith refresh:', err);
+            paint("Couldn't refresh hadith.", '');
+            return { ok: false, error: String(err) };
+          }).finally(() => {
+            btn.disabled = false;
+            btn.textContent = originalText;
+          });
+        } else {
+          // no button in DOM — still perform fetch
+          return fetchHadith({ forceRandomFallback: true });
+        }
+      };
+
+      const refreshBtn = document.getElementById('refreshHadithBtn');
+      if (refreshBtn) {
+        refreshBtn.addEventListener('click', () => { window.__refreshHadith(); });
+      } else {
+        console.warn('Refresh Hadith button not found in DOM');
+      }
+      }) ();
       // ---------- Visit counter (counts once per browser per day) ----------
       (function () {
         const COUNTER_KEY = 'gmi-corporate-shirt-dashboard'; // change this if you ever want to reset to zero
