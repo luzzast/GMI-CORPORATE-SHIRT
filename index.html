@@ -363,7 +363,7 @@
       font-size: 10.5px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: var(--muted);
+      color: rgb(255, 153, 0);
       margin: 0 0 6px;
     }
 
@@ -588,14 +588,14 @@
     }
 
     .week-card:hover {
-      border-color: rgb(255, 187, 0);
+      border-color: rgb(255, 153, 0);
       box-shadow: 0 0 0 1px rgb(255, 187, 0), 0 4px 16px rgba(255, 187, 0, 0.35);
       transform: translateY(-2px);
     }
 
     .week-card.is-today:hover,
     .week-card.is-this-week:hover {
-      border-color: rgb(255, 187, 0);
+      border-color: rgb(255, 153, 0);
       box-shadow: 0 0 0 1px rgb(255, 187, 0), 0 4px 16px rgba(255, 187, 0, 0.35);
     }
 
@@ -685,7 +685,7 @@
       margin-top: 32px;
       padding-top: 20px;
       border-top: 1px solid var(--panel-edge);
-      color: var(--muted);
+      color: rgb(255, 153, 0);
       font-size: 12.5px;
       line-height: 1.6;
       display: flex;
@@ -695,7 +695,7 @@
     }
 
     .footnote b {
-      color: var(--muted);
+      color: rgb(255, 153, 0);
       font-weight: 600;
     }
 
@@ -716,6 +716,25 @@
       * {
         transition: none !important;
       }
+    }
+
+    .external-link:link,
+    .external-link:visited {
+      color: rgba(4, 255, 0, 0.958);
+      background-color: transparent;
+      text-decoration: none;
+    }
+
+    .external-link:hover {
+      color: rgba(4, 255, 0, 0.958);
+      background-color: transparent;
+      text-decoration: underline;
+    }
+
+    .external-link:active {
+      color: rgb(0, 60, 255);
+      background-color: transparent;
+      text-decoration: underline;
     }
   </style>
 </head>
@@ -792,7 +811,9 @@
           </div>
         </div>
         <p class="prayer-source" id="prayerNote">Fetching today's prayer schedule…</p>
-        <p class="prayer-note">Prayer times from JAKIM e-Solat (zone SGR01)</p>
+        <p class="prayer-note">Prayer times from JAKIM e-Solat (zone SGR01) - <a class="external-link"
+            href="https://www.e-solat.gov.my/" target="_blank" rel="noopener noreferrer">https://www.e-solat.gov.my/</a>
+        </p>
       </div>
     </div>
 
